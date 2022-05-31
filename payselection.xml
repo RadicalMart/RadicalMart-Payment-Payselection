@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.9" type="plugin" group="radicalmart_payment" method="upgrade">
+	<name>PLG_RADICALMART_PAYMENT_PAYSELECTION</name>
+	<author>Delo Design</author>
+	<creationDate>May 2022</creationDate>
+	<copyright>Copyright © 2021 Delo Design. All rights reserved.</copyright>
+	<license>https://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>boss@delo-design.ru</authorEmail>
+	<authorUrl>https://delo-design.ru</authorUrl>
+	<version>0.0.1-dev</version>
+	<description>PLG_RADICALMART_PAYMENT_PAYSELECTION_DESCRIPTION</description>
+	<scriptfile>script.php</scriptfile>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/en-GB.plg_radicalmart_payment_payselection.ini</language>
+		<language tag="en-GB">en-GB/en-GB.plg_radicalmart_payment_payselection.sys.ini</language>
+		<language tag="ru-RU">ru-RU/ru-RU.plg_radicalmart_payment_payselection.ini</language>
+		<language tag="ru-RU">ru-RU/ru-RU.plg_radicalmart_payment_payselection.sys.ini</language>
+	</languages>
+	<files>
+		<filename plugin="payselection">payselection.php</filename>
+		<folder>forms</folder>
+	</files>
+	<updateservers>
+		<server type="extension" priority="1" name="RadicalMart Payment: Payselection">
+			https://radicalmart.ru/update?element=plg_radicalmart_payment_payselection
+		</server>
+	</updateservers>
+</extension>
