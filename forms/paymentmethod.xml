@@ -13,6 +13,14 @@
 				   layout="joomla.form.field.list-fancy-select">
 				<option value="">COM_RADICALMART_STATUS_SELECT</option>
 			</field>
+			<field name="api_id" type="text"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_ID"
+				   autocomplete="false"
+				   required="true"/>
+			<field name="api_secret" type="password"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_SECRET"
+				   autocomplete="false"
+				   required="true"/>
 		</fields>
 	</fieldset>
 </form>

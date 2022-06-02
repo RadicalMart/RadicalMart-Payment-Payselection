@@ -19,6 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Http\Response;
 use Joomla\Registry\Registry;
 
 class plgRadicalMart_PaymentPayselection extends CMSPlugin
@@ -77,10 +78,9 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 		// Set disabled
 		$method->disabled = false;
 
-		// TODO: Clean secret param
-		$method->params->set('public_id', '');
+		// Clean secret param
+		$method->params->set('api_id', '');
 		$method->params->set('api_secret', '');
-		$method->params->set('inn', '');
 
 		// Set order
 		$method->order              = new stdClass();
@@ -113,7 +113,7 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 
 		// Check method params
 		$params = $this->getPaymentMethodParams($order->payment->id);
-		// TODO Check params if (empty($params->get('public_id')) || empty($params->get('api_secret'))) return false;
+		if (empty($params->get('api_id')) || empty($params->get('api_secret'))) return false;
 
 		// Check order status
 		if (empty($order->status->id) || !in_array($order->status->id, $params->get('payment_available', array())))
@@ -179,7 +179,117 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 			|| empty($order->payment->plugin)
 			|| $order->payment->plugin !== 'payselection') return $result;
 
-		echo '<pre>', print_r($order, true), '</pre>';
-		exit('stop');
+		// Get method params
+		$params = $this->getPaymentMethodParams($order->payment->id);
+		if (empty($params->get('api_id')) || empty($params->get('api_secret')))
+		{
+			throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'), 500);
+		}
+
+		// Check order status
+		if (empty($order->status->id) || !in_array($order->status->id, $params->get('payment_available', array())))
+		{
+			throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_PAYMENT_NOT_AVAILABLE'), 500);
+		}
+
+		// Prepare data
+		$data = array(
+			'MetaData'       => array(
+				'PaymentType' => "Pay"
+			),
+			'PaymentRequest' => array(
+				'OrderId'     => $order->number,
+				'Amount'      => (string) $order->total['final'],
+				'Currency'    => $order->currency['code'],
+				'Description' => $order->title,
+				'RebillFlag'  => false,
+				'ExtraData'   => array(
+					'ReturnUrl' => $links['success'] . '/' . $order->number
+				)
+			),
+		);
+
+		// Create transaction request
+		$response = $this->sendRequest('webpayments/create', $data, array(
+			'api_id'     => $params->get('api_id'),
+			'api_secret' => $params->get('api_secret'),
+		));
+		$body     = $response->body;
+		$context  = (!empty($body)) ? new Registry($response->body) : false;
+		if (!$context)
+		{
+			$message = preg_replace('#^[0-9]*\s#', '', $response->headers['Status']);
+			throw new Exception('Payselection: ' . $message, $response->code);
+		}
+		elseif ($response->code === 201)
+		{
+			$result['link'] = $context->get('scalar');
+		}
+		elseif ($response->code === 409)
+		{
+			$result['link'] = $context->get('AddDetails')->URL;
+		}
+		else
+		{
+			throw new Exception('Payselection: ' . $context->get('Code'), $response->code);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to send api request.
+	 *
+	 * @param   string  $method  The api method name.
+	 * @param   array   $data    Request data.
+	 * @param   array   $access  Access params.
+	 *
+	 * @throws Exception
+	 *
+	 * @return  Response  Response object on success.
+	 *
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected function sendRequest($method = null, $data = array(), $access = array())
+	{
+		// Check method
+		$method = trim($method, '/');
+		if (empty($method)) throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_METHOD_NOT_FOUND'));
+
+		// Check access
+		if (empty($access['api_id']) || empty($access['api_secret']))
+		{
+			throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'), 500);
+		}
+
+		// Convert data
+		if (!is_array($data)) $data = (new Registry($data))->toArray();
+		$data = json_encode($data);
+
+		// Prepare request
+		$url               = 'https://webform.payselection.com/' . $method;
+		$request_id        = md5($method . '_' . $data);
+		$request_signature = hash_hmac('sha256',
+			implode(PHP_EOL, array('POST',
+				'/' . $method,
+				$access['api_id'],
+				$request_id,
+				$data))
+			, $access['api_secret'], false);
+		$headers           = array(
+			'Content-Type'        => 'application/json',
+			'X-SITE-ID'           => $access['api_id'],
+			'X-REQUEST-ID'        => $request_id,
+			'X-REQUEST-SIGNATURE' => $request_signature
+		);
+
+		// Send request
+		$http = new Http();
+		$http->setOption('transport.curl', array(
+			CURLOPT_SSL_VERIFYHOST => 0,
+			CURLOPT_SSL_VERIFYPEER => 0
+		));
+
+		return $http->post($url, $data, $headers);
 	}
 }
