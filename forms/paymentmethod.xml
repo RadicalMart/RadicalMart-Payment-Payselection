@@ -2,6 +2,7 @@
 <form>
 	<fieldset name="settings" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT">
 		<fields name="params">
+			<field type="payment_urls" label="COM_RADICALMART_PAYMENT_METHOD_URLS" plugin="payselection"/>
 			<field name="payment_available" type="statuses"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT_AVAILABLE"
 				   multiple="true"
