@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="settings" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT">
+		<fields name="params">
+			<field type="payment_urls" label="COM_RADICALMART_PAYMENT_METHOD_URLS" plugin="payselection"/>
+			<field name="payment_available" type="statuses"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT_AVAILABLE"
+				   multiple="true"
+				   required="true"
+				   layout="joomla.form.field.list-fancy-select"/>
+			<field name="paid_status" type="statuses"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAID_STATUS"
+				   required="true"
+				   layout="joomla.form.field.list-fancy-select">
+				<option value="">COM_RADICALMART_STATUS_SELECT</option>
+			</field>
+			<field name="api_id" type="text"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_ID"
+				   autocomplete="false"
+				   required="true"/>
+			<field name="api_secret" type="password"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_SECRET"
+				   autocomplete="false"
+				   required="true"/>
+		</fields>
+	</fieldset>
+</form>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="payment">
+		<field name="payselection_api_id" type="text"
+			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_ID"
+			   autocomplete="false"
+			   required="true"/>
+		<field name="payselection_api_secret" type="password"
+			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_SECRET"
+			   autocomplete="false"
+			   required="true"/>
+	</fieldset>
+</form>
