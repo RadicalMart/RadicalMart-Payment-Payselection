@@ -193,7 +193,7 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 		}
 
 		// Prepare data
-		$amount = number_format($order->total['final'], 2, '.', ' ');
+		$amount = number_format($order->total['final'], 2, '.', '');
 		$data   = array(
 			'MetaData'       => array(
 				'PaymentType' => "Pay"
@@ -386,7 +386,7 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 		}
 
 		// Prepare data
-		$amount = number_format($order->total['final'], 2, '.', ' ');
+		$amount = number_format($order->total['final'], 2, '.', '');
 		$data   = array(
 			'MetaData'       => array(
 				'PaymentType' => "Pay"
