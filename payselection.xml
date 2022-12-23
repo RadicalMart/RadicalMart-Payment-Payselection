@@ -22,7 +22,7 @@
 	</files>
 	<updateservers>
 		<server type="extension" priority="1" name="RadicalMart Payment: Payselection">
-			https://radicalmart.ru/update?element=plg_radicalmart_payment_payselection
+			https://sovmart.ru/update?element=plg_radicalmart_payment_payselection
 		</server>
 	</updateservers>
 </extension>
