@@ -2,12 +2,12 @@
 <extension version="3.9" type="plugin" group="radicalmart_payment" method="upgrade">
 	<name>PLG_RADICALMART_PAYMENT_PAYSELECTION</name>
 	<author>Delo Design</author>
-	<creationDate>June 2022</creationDate>
+	<creationDate>December 2022</creationDate>
 	<copyright>Copyright © 2021 Delo Design. All rights reserved.</copyright>
 	<license>https://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>boss@delo-design.ru</authorEmail>
 	<authorUrl>https://delo-design.ru</authorUrl>
-	<version>1.0.1-dev</version>
+	<version>1.0.1</version>
 	<description>PLG_RADICALMART_PAYMENT_PAYSELECTION_DESCRIPTION</description>
 	<scriptfile>script.php</scriptfile>
 	<languages folder="language">
