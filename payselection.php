@@ -19,6 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Component\RadicalMart\Administrator\Helper\ParamsHelper;
 use Joomla\Http\Response;
 use Joomla\Registry\Registry;
 
@@ -73,7 +74,8 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 	 *
 	 * @since  1.0.0
 	 */
-	public function onRadicalMartGetPaymentMethods($context, $method, $formData, $products, $currency)
+	public function onRadicalMartGetPaymentMethods(string $context, object $method, array $formData,
+	                                               array  $products, array $currency)
 	{
 		// Set disabled
 		$method->disabled = false;
@@ -88,7 +90,7 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 		$method->order->title       = $method->title;
 		$method->order->code        = $method->code;
 		$method->order->description = $method->description;
-		$method->order->price       = array();
+		$method->order->price       = [];
 	}
 
 	/**
@@ -113,10 +115,13 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 
 		// Check method params
 		$params = $this->getPaymentMethodParams($order->payment->id);
-		if (empty($params->get('api_id')) || empty($params->get('api_secret'))) return false;
+		if (empty($params->get('api_id')) || empty($params->get('api_secret')))
+		{
+			return false;
+		}
 
 		// Check order status
-		if (empty($order->status->id) || !in_array($order->status->id, $params->get('payment_available', array())))
+		if (empty($order->status->id) || !in_array($order->status->id, $params->get('payment_available', [])))
 		{
 			return false;
 		}
@@ -168,19 +173,22 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 	 */
 	public function onRadicalMartPay($order, $links, $params)
 	{
-		$result = array(
+		$result = [
 			'pay_instant' => true,
 			'link'        => false,
-		);
+		];
 
 		// Check order payment method
 		if (empty($order->payment)
 			|| empty($order->payment->id)
 			|| empty($order->payment->plugin)
-			|| $order->payment->plugin !== 'payselection') return $result;
+			|| $order->payment->plugin !== 'payselection')
+		{
+			return $result;
+		}
 
 		// Get method params
-		$params = $this->getPaymentMethodParams($order->payment->id);
+		$params = ParamsHelper::getPaymentMethodsParams($order->payment->id);
 		if (empty($params->get('api_id')) || empty($params->get('api_secret')))
 		{
 			throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'));
@@ -194,21 +202,105 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 
 		// Prepare data
 		$amount = number_format($order->total['final'], 2, '.', '');
-		$data   = array(
-			'MetaData'       => array(
-				'PaymentType' => "Pay"
-			),
-			'PaymentRequest' => array(
+		$data   = [
+			'MetaData'       => [
+				'PaymentType' => 'Pay'
+			],
+			'PaymentRequest' => [
 				'OrderId'     => $order->number,
 				'Amount'      => $amount,
 				'Currency'    => $order->currency['code'],
 				'Description' => $order->title,
 				'RebillFlag'  => false,
-				'ExtraData'   => array(
+				'ExtraData'   => [
 					'ReturnUrl' => $links['success'] . '/' . $order->number
-				)
-			),
-		);
+				]
+			],
+		];
+
+		if ((int) $params->get('receipt', 0) === 1)
+		{
+			$data['ReceiptData'] = [
+				'timestamp'   => Factory::getDate()->format('d.m.Y h:m:s'),
+				'external_id' => $order->number,
+				'receipt'     => [
+					'client'   => [],
+					'company'  => [
+						'inn'             => $params->get('receipt_company_inn'),
+						'payment_address' => $params->get('receipt_company_payment_address', Uri::root())
+					],
+					'items'    => [],
+					'payments' => [
+						[
+							'type' => (int) $params->get('receipt_payments_type', 0),
+							'sum'  => $order->total['final'],
+						]
+					],
+					'total'    => $order->total['final']
+				]
+			];
+
+			$name = [];
+			if (!empty($order->contacts['first_name']))
+			{
+				$name[] = $order->contacts['first_name'];
+			}
+			if (!empty($order->contacts['last_name']))
+			{
+				$name[] = $order->contacts['first_name'];
+			}
+			if (!empty($name))
+			{
+				$data['ReceiptData']['receipt']['client']['name'] = implode(' ', $name);
+			}
+
+			if (!empty($order->contacts['email']))
+			{
+				$data['ReceiptData']['receipt']['client']['email'] = $order->contacts['email'];
+			}
+
+			if (!empty($order->contacts['phone']))
+			{
+				$data['ReceiptData']['receipt']['client']['phone'] = $order->contacts['phone'];
+			}
+
+			foreach ($order->products as $product)
+			{
+				$data['ReceiptData']['receipt']['items'][] = [
+					'name'           => $product->title,
+					'price'          => $product->order['base'],
+					'quantity'       => $product->order['quantity'],
+					'sum'            => $product->order['sum_final'],
+					'payment_method' => $params->get('receipt_items_product_payment_method', 'full_payment'),
+					'payment_object' => $params->get('receipt_items_product_payment_object', 'commodity'),
+					'vat'            => ['type' => $params->get('receipt_items_product_vat_type', 'none')]
+				];
+			}
+
+
+			// Add shipping
+			if (!empty($order->shipping) && !empty($order->shipping->order)
+				&& !empty($order->shipping->order->price)
+				&& (!empty($order->shipping->order->price['base']) || !empty($order->shipping->order->price['final']))
+			)
+			{
+				$shipping = $order->shipping;
+				$base     = (!empty($shipping->order->price['base']))
+					? $shipping->order->price['base'] : $shipping->order->price['final'];
+				$final    = (!empty($shipping->order->price['final']))
+					? $shipping->order->price['final'] : $shipping->order->price['base'];
+
+				$data['ReceiptData']['receipt']['items'][] = [
+					'name'           => (!empty($shipping->order->title)) ? $shipping->order->title : $shipping->title,
+					'price'          => $base,
+					'quantity'       => 1,
+					'sum'            => $final,
+					'payment_method' => $params->get('receipt_items_shipping_payment_method', 'full_payment'),
+					'payment_object' => $params->get('receipt_items_shipping_payment_object', 'service'),
+					'vat'            => ['type' => $params->get('receipt_items_shipping_vat_type', 'none')]
+				];
+			}
+		}
 
 		// Create transaction
 		$result['link'] = $this->createTransaction($data, array(
@@ -222,9 +314,9 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 	/**
 	 * Method to set RadicalMart order pay status after payment.
 	 *
-	 * @param   array                    $input   Input data.
-	 * @param   RadicalMartModelPayment  $model   RadicalMart model.
-	 * @param   Registry                 $params  RadicalMart params.
+	 * @param   array                                                  $input   Input data.
+	 * @param   \Joomla\Component\RadicalMart\Site\Model\PaymentModel  $model   RadicalMart model.
+	 * @param   Registry                                               $params  RadicalMart params.
 	 *
 	 * @throws Exception
 	 *
@@ -402,6 +494,66 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 				)
 			),
 		);
+
+		if ((int) $params->get('payselection_receipt', 0) === 1)
+		{
+			$data['ReceiptData'] = [
+				'timestamp'   => Factory::getDate()->format('d.m.Y h:m:s'),
+				'external_id' => $order->number,
+				'receipt'     => [
+					'client'   => [],
+					'company'  => [
+						'inn'             => $params->get('payselection_receipt_company_inn'),
+						'payment_address' => $params->get('payselection_receipt_company_payment_address', Uri::root())
+					],
+					'items'    => [],
+					'payments' => [
+						[
+							'type' => (int) $params->get('payselection_receipt_payments_type', 0),
+							'sum'  => $order->total['final'],
+						]
+					],
+					'total'    => $order->total['final']
+				]
+			];
+
+			$name = [];
+			if (!empty($order->contacts['first_name']))
+			{
+				$name[] = $order->contacts['first_name'];
+			}
+			if (!empty($order->contacts['last_name']))
+			{
+				$name[] = $order->contacts['first_name'];
+			}
+			if (!empty($name))
+			{
+				$data['ReceiptData']['receipt']['client']['name'] = implode(' ', $name);
+			}
+
+			if (!empty($order->contacts['email']))
+			{
+				$data['ReceiptData']['receipt']['client']['email'] = $order->contacts['email'];
+			}
+
+			if (!empty($order->contacts['phone']))
+			{
+				$data['ReceiptData']['receipt']['client']['phone'] = $order->contacts['phone'];
+			}
+
+			foreach ($order->products as $product)
+			{
+				$data['ReceiptData']['receipt']['items'][] = [
+					'name'           => $product->title,
+					'price'          => $product->order['base'],
+					'quantity'       => $product->order['quantity'],
+					'sum'            => $product->order['sum_final'],
+					'payment_method' => $params->get('payselection_receipt_items_product_payment_method', 'full_payment'),
+					'payment_object' => $params->get('payselection_receipt_items_product_payment_object', 'commodity'),
+					'vat'            => ['type' => $params->get('payselection_receipt_items_product_vat_type', 'none')]
+				];
+			}
+		}
 
 		// Create transaction
 		$result['link'] = $this->createTransaction($data, array(
