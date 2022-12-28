@@ -495,6 +495,66 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 			),
 		);
 
+		if ((int) $params->get('payselection_receipt', 0) === 1)
+		{
+			$data['ReceiptData'] = [
+				'timestamp'   => Factory::getDate()->format('d.m.Y h:m:s'),
+				'external_id' => $order->number,
+				'receipt'     => [
+					'client'   => [],
+					'company'  => [
+						'inn'             => $params->get('payselection_receipt_company_inn'),
+						'payment_address' => $params->get('payselection_receipt_company_payment_address', Uri::root())
+					],
+					'items'    => [],
+					'payments' => [
+						[
+							'type' => (int) $params->get('payselection_receipt_payments_type', 0),
+							'sum'  => $order->total['final'],
+						]
+					],
+					'total'    => $order->total['final']
+				]
+			];
+
+			$name = [];
+			if (!empty($order->contacts['first_name']))
+			{
+				$name[] = $order->contacts['first_name'];
+			}
+			if (!empty($order->contacts['last_name']))
+			{
+				$name[] = $order->contacts['first_name'];
+			}
+			if (!empty($name))
+			{
+				$data['ReceiptData']['receipt']['client']['name'] = implode(' ', $name);
+			}
+
+			if (!empty($order->contacts['email']))
+			{
+				$data['ReceiptData']['receipt']['client']['email'] = $order->contacts['email'];
+			}
+
+			if (!empty($order->contacts['phone']))
+			{
+				$data['ReceiptData']['receipt']['client']['phone'] = $order->contacts['phone'];
+			}
+
+			foreach ($order->products as $product)
+			{
+				$data['ReceiptData']['receipt']['items'][] = [
+					'name'           => $product->title,
+					'price'          => $product->order['base'],
+					'quantity'       => $product->order['quantity'],
+					'sum'            => $product->order['sum_final'],
+					'payment_method' => $params->get('payselection_receipt_items_product_payment_method', 'full_payment'),
+					'payment_object' => $params->get('payselection_receipt_items_product_payment_object', 'commodity'),
+					'vat'            => ['type' => $params->get('payselection_receipt_items_product_vat_type', 'none')]
+				];
+			}
+		}
+
 		// Create transaction
 		$result['link'] = $this->createTransaction($data, array(
 			'api_id'     => $params->get('payselection_api_id'),
