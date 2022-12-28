@@ -7,7 +7,7 @@
 	<license>https://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>boss@delo-design.ru</authorEmail>
 	<authorUrl>https://delo-design.ru</authorUrl>
-	<version>1.0.2-dev</version>
+	<version>1.1.0</version>
 	<description>PLG_RADICALMART_PAYMENT_PAYSELECTION_DESCRIPTION</description>
 	<scriptfile>script.php</scriptfile>
 	<languages folder="language">
