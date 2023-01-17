@@ -1,171 +1,312 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset name="payment">
-		<field name="payselection_api_id" type="text"
-			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_ID"
-			   autocomplete="false"
-			   required="true"/>
-		<field name="payselection_api_secret" type="password"
-			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_SECRET"
-			   autocomplete="false"
-			   required="true"/>
-		<field name="payselection_receipt" type="radio"
-			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_LABEL"
-			   class="btn-group btn-group-yesno"
-			   default="0">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="payselection_receipt_company_inn" type="text"
-			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_COMPANY_INN"
-			   showon="payselection_receipt:1"/>
-		<field name="payselection_receipt_company_payment_address" type="text"
-			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_COMPANY_PAYMENT_ADDRESS"
-			   hint="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_COMPANY_PAYMENT_ADDRESS_HINT"
-			   showon="payselection_receipt:1"/>
-		<field name="receipt_payments_type" type="list"
-			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE"
-			   showon="payselection_receipt:1">
-			<option value="0">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_0</option>
-			<option value="1">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_1</option>
-			<option value="2">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_2</option>
-			<option value="3">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_3</option>
-			<option value="4">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_4</option>
-		</field>
-		<field type="note"
-			   label="COM_RADICALMART_EXPRESS_PRODUCT"
-			   showon="payselection_receipt:1"/>
-		<field name="payselection_receipt_items_product_payment_method" type="list"
-			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD"
-			   showon="payselection_receipt:1"
-			   default="full_payment">
-			<option value="full_prepayment">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_FULL_PREPAYMENT
-			</option>
-			<option value="prepayment">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_PREPAYMENT
-			</option>
-			<option value="advance">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_ADVANCE
-			</option>
-			<option value="full_payment">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_FULL_PAYMENT
-			</option>
-			<option value="partial_payment">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_PARTIAL_PAYMENT
-			</option>
-			<option value="credit">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_CREDIT
-			</option>
-			<option value="credit_payment">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_CREDIT_PAYMENT
-			</option>
-		</field>
-		<field name="payselection_receipt_items_product_payment_object" type="list"
-			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT"
-			   showon="payselection_receipt:1"
-			   default="commodity">
-			<option value="commodity">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_COMMODITY
-			</option>
-			<option value="excise">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_EXCISE
-			</option>
-			<option value="job">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_JOB
-			</option>
-			<option value="service">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_SERVICE
-			</option>
-			<option value="gambling_bet">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_GAMBLING_BET
-			</option>
-			<option value="gambling_prize">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_GAMBLING_PRIZE
-			</option>
-			<option value="lottery">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_LOTTERY
-			</option>
-			<option value="lottery_prize">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_LOTTERY_PRIZE
-			</option>
-			<option value="intellectual_activity">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_INTELLECTUAL_ACTIVITY
-			</option>
-			<option value="payment">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_PAYMENT
-			</option>
-			<option value="agent_commission">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_AGENT_COMMISSION
-			</option>
-			<option value="award">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_AWARD
-			</option>
-			<option value="another">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_ANOTHER
-			</option>
-			<option value="property_right">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_PROPERTY_RIGHT
-			</option>
-			<option value="non-operating_gain">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_NON-OPERATING_GAIN
-			</option>
-			<option value="insurance_premium">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_INSURANCE_PREMIUM
-			</option>
-			<option value="sales_tax">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_SALES_TAX
-			</option>
-			<option value="deposit">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_DEPOSIT
-			</option>
-			<option value="expense">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_EXPENSE
-			</option>
-			<option value="pension_insurance">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_PENSION_INSURANCE
-			</option>
-			<option value="medical_insurance_ip">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_MEDICAL_INSURANCE_IP
-			</option>
-			<option value="medical_insurance">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_MEDICAL_INSURANCE
-			</option>
-			<option value="social_insurance">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_SOCIAL_INSURANCE
-			</option>
-			<option value="casino_payment">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_CASINO_PAYMENT
-			</option>
-		</field>
-		<field name="payselection_receipt_items_product_vat_type" type="list"
-			   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE"
-			   showon="payselection_receipt:1"
-			   default="none">
-			<option value="none">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_NONE
-			</option>
-			<option value="vat0">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT0
-			</option>
-			<option value="vat10">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT10
-			</option>
-			<option value="vat18">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT18
-			</option>
-			<option value="vat110">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT110
-			</option>
-			<option value="vat118">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT118
-			</option>
-			<option value="vat20">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT20
-			</option>
-			<option value="vat120">
-				PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT120
-			</option>
-		</field>
+	<fieldset name="payment_settings" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT">
+		<fields name="payment_params">
+			<field name="api_id" type="text"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_ID"
+				   autocomplete="false"
+				   required="true"/>
+			<field name="api_secret" type="password"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_SECRET"
+				   autocomplete="false"
+				   required="true"/>
+		</fields>
+	</fieldset>
+	<fieldset name="payment_receipt" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT">
+		<fields name="payment_params">
+			<field name="receipt" type="radio"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_LABEL"
+				   class="btn-group btn-group-yesno"
+				   default="0">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field name="receipt_company_inn" type="text"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_COMPANY_INN"
+				   showon="receipt:1"/>
+			<field name="receipt_company_payment_address" type="text"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_COMPANY_PAYMENT_ADDRESS"
+				   hint="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_COMPANY_PAYMENT_ADDRESS_HINT"
+				   showon="receipt:1"/>
+			<field name="receipt_payments_type" type="list"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE"
+				   showon="receipt:1">
+				<option value="0">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_0</option>
+				<option value="1">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_1</option>
+				<option value="2">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_2</option>
+				<option value="3">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_3</option>
+				<option value="4">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_4</option>
+			</field>
+			<field type="note"
+				   label="COM_RADICALMART_EXPRESS_PRODUCT"
+				   showon="receipt:1"/>
+			<field name="receipt_items_product_payment_method" type="list"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD"
+				   showon="receipt:1"
+				   default="full_payment">
+				<option value="full_prepayment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_FULL_PREPAYMENT
+				</option>
+				<option value="prepayment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_PREPAYMENT
+				</option>
+				<option value="advance">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_ADVANCE
+				</option>
+				<option value="full_payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_FULL_PAYMENT
+				</option>
+				<option value="partial_payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_PARTIAL_PAYMENT
+				</option>
+				<option value="credit">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_CREDIT
+				</option>
+				<option value="credit_payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_CREDIT_PAYMENT
+				</option>
+			</field>
+			<field name="receipt_items_product_payment_object" type="list"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT"
+				   showon="receipt:1"
+				   default="commodity">
+				<option value="commodity">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_COMMODITY
+				</option>
+				<option value="excise">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_EXCISE
+				</option>
+				<option value="job">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_JOB
+				</option>
+				<option value="service">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_SERVICE
+				</option>
+				<option value="gambling_bet">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_GAMBLING_BET
+				</option>
+				<option value="gambling_prize">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_GAMBLING_PRIZE
+				</option>
+				<option value="lottery">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_LOTTERY
+				</option>
+				<option value="lottery_prize">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_LOTTERY_PRIZE
+				</option>
+				<option value="intellectual_activity">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_INTELLECTUAL_ACTIVITY
+				</option>
+				<option value="payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_PAYMENT
+				</option>
+				<option value="agent_commission">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_AGENT_COMMISSION
+				</option>
+				<option value="award">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_AWARD
+				</option>
+				<option value="another">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_ANOTHER
+				</option>
+				<option value="property_right">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_PROPERTY_RIGHT
+				</option>
+				<option value="non-operating_gain">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_NON-OPERATING_GAIN
+				</option>
+				<option value="insurance_premium">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_INSURANCE_PREMIUM
+				</option>
+				<option value="sales_tax">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_SALES_TAX
+				</option>
+				<option value="deposit">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_DEPOSIT
+				</option>
+				<option value="expense">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_EXPENSE
+				</option>
+				<option value="pension_insurance">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_PENSION_INSURANCE
+				</option>
+				<option value="medical_insurance_ip">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_MEDICAL_INSURANCE_IP
+				</option>
+				<option value="medical_insurance">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_MEDICAL_INSURANCE
+				</option>
+				<option value="social_insurance">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_SOCIAL_INSURANCE
+				</option>
+				<option value="casino_payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_CASINO_PAYMENT
+				</option>
+			</field>
+			<field name="receipt_items_product_vat_type" type="list"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE"
+				   showon="receipt:1"
+				   default="none">
+				<option value="none">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_NONE
+				</option>
+				<option value="vat0">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT0
+				</option>
+				<option value="vat10">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT10
+				</option>
+				<option value="vat18">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT18
+				</option>
+				<option value="vat110">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT110
+				</option>
+				<option value="vat118">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT118
+				</option>
+				<option value="vat20">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT20
+				</option>
+				<option value="vat120">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT120
+				</option>
+			</field>
+			<field type="note"
+				   label="COM_RADICALMART_EXPRESS_SHIPPING"
+				   showon="receipt:1"/>
+			<field name="receipt_items_shipping_payment_method" type="list"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD"
+				   showon="receipt:1"
+				   default="full_payment">
+				<option value="full_prepayment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_FULL_PREPAYMENT
+				</option>
+				<option value="prepayment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_PREPAYMENT
+				</option>
+				<option value="advance">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_ADVANCE
+				</option>
+				<option value="full_payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_FULL_PAYMENT
+				</option>
+				<option value="partial_payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_PARTIAL_PAYMENT
+				</option>
+				<option value="credit">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_CREDIT
+				</option>
+				<option value="credit_payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD_CREDIT_PAYMENT
+				</option>
+			</field>
+			<field name="receipt_items_shipping_payment_object" type="list"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT"
+				   showon="receipt:1"
+				   default="commodity">
+				<option value="service">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_COMMODITY
+				</option>
+				<option value="excise">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_EXCISE
+				</option>
+				<option value="job">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_JOB
+				</option>
+				<option value="service">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_SERVICE
+				</option>
+				<option value="gambling_bet">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_GAMBLING_BET
+				</option>
+				<option value="gambling_prize">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_GAMBLING_PRIZE
+				</option>
+				<option value="lottery">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_LOTTERY
+				</option>
+				<option value="lottery_prize">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_LOTTERY_PRIZE
+				</option>
+				<option value="intellectual_activity">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_INTELLECTUAL_ACTIVITY
+				</option>
+				<option value="payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_PAYMENT
+				</option>
+				<option value="agent_commission">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_AGENT_COMMISSION
+				</option>
+				<option value="award">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_AWARD
+				</option>
+				<option value="another">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_ANOTHER
+				</option>
+				<option value="property_right">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_PROPERTY_RIGHT
+				</option>
+				<option value="non-operating_gain">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_NON-OPERATING_GAIN
+				</option>
+				<option value="insurance_premium">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_INSURANCE_PREMIUM
+				</option>
+				<option value="sales_tax">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_SALES_TAX
+				</option>
+				<option value="deposit">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_DEPOSIT
+				</option>
+				<option value="expense">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_EXPENSE
+				</option>
+				<option value="pension_insurance">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_PENSION_INSURANCE
+				</option>
+				<option value="medical_insurance_ip">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_MEDICAL_INSURANCE_IP
+				</option>
+				<option value="medical_insurance">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_MEDICAL_INSURANCE
+				</option>
+				<option value="social_insurance">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_SOCIAL_INSURANCE
+				</option>
+				<option value="casino_payment">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_OBJECT_CASINO_PAYMENT
+				</option>
+			</field>
+			<field name="receipt_items_shipping_vat_type" type="list"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE"
+				   showon="receipt:1"
+				   default="none">
+				<option value="none">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_NONE
+				</option>
+				<option value="vat0">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT0
+				</option>
+				<option value="vat10">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT10
+				</option>
+				<option value="vat18">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT18
+				</option>
+				<option value="vat110">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT110
+				</option>
+				<option value="vat118">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT118
+				</option>
+				<option value="vat20">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT20
+				</option>
+				<option value="vat120">
+					PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_VAT_TYPE_VAT120
+				</option>
+			</field>
+		</fields>
 	</fieldset>
 </form>
