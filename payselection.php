@@ -62,6 +62,24 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 	protected $_paymentMethodParams = null;
 
 	/**
+	 * Enable on RadicalMart
+	 *
+	 * @var  bool
+	 *
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public bool $radicalmart = true;
+
+	/**
+	 * Enable on RadicalMartExpress
+	 *
+	 * @var  bool
+	 *
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public bool $radicalmart_express = true;
+
+	/**
 	 * Prepare order shipping method data.
 	 *
 	 * @param   string  $context   Context selector string.
@@ -434,21 +452,6 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 					$log['transaction_id']);
 			}
 		}
-	}
-
-	/**
-	 * Method to send data for Express config.
-	 *
-	 * @return array Express list data.
-	 *
-	 * @since   1.0.0
-	 */
-	public function onRadicalMartExpressPaymentMethods()
-	{
-		return array(
-			'text'  => Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_EXPRESS_TITLE'),
-			'value' => 'payselection'
-		);
 	}
 
 	/**
