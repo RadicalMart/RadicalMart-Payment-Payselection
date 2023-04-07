@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="payment_settings" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT">
-		<fields name="payment_params">
+		<fields name="payment_method_params">
 			<field name="api_id" type="text"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_ID"
 				   autocomplete="false"
@@ -13,7 +13,7 @@
 		</fields>
 	</fieldset>
 	<fieldset name="payment_receipt" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT">
-		<fields name="payment_params">
+		<fields name="payment_method_params">
 			<field name="receipt" type="radio"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_LABEL"
 				   class="btn-group btn-group-yesno"

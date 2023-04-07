@@ -2,9 +2,9 @@
 /*
  * @package     RadicalMart Payment Payselection Plugin
  * @subpackage  plg_radicalmart_payment_payselection
- * @version     1.1.0
+ * @version     __DEPLOY_VERSION__
  * @author      Delo Design - delo-design.ru
- * @copyright   Copyright (c) 2022 Delo Design. All rights reserved.
+ * @copyright   Copyright (c) 2023 Delo Design. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
  * @link        https://delo-design.ru/
  */
@@ -79,102 +79,8 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 	 */
 	public bool $radicalmart_express = true;
 
-	/**
-	 * Prepare order shipping method data.
-	 *
-	 * @param   string  $context   Context selector string.
-	 * @param   object  $method    Method data.
-	 * @param   array   $formData  Order form data.
-	 * @param   array   $products  Order products data.
-	 * @param   array   $currency  Order currency data.
-	 *
-	 * @throws  Exception
-	 *
-	 * @since  1.0.0
-	 */
-	public function onRadicalMartGetPaymentMethods(string $context, object $method, array $formData,
-	                                               array  $products, array $currency)
-	{
-		// Set disabled
-		$method->disabled = false;
 
-		// Clean secret param
-		$method->params->set('api_id', '');
-		$method->params->set('api_secret', '');
 
-		// Set order
-		$method->order              = new stdClass();
-		$method->order->id          = $method->id;
-		$method->order->title       = $method->title;
-		$method->order->code        = $method->code;
-		$method->order->description = $method->description;
-		$method->order->price       = [];
-	}
-
-	/**
-	 * Check can order pay.
-	 *
-	 * @param   string  $context  Context selector string.
-	 * @param   object  $order    Order Item data.
-	 *
-	 * @throws  Exception
-	 *
-	 * @return boolean True if can pay, False if not.
-	 *
-	 * @since  1.0.0
-	 */
-	public function onRadicalMartCheckOrderPay($context, $order)
-	{
-		// Check order payment method
-		if (empty($order->payment)
-			|| empty($order->payment->id)
-			|| empty($order->payment->plugin)
-			|| $order->payment->plugin !== 'payselection') return false;
-
-		// Check method params
-		$params = $this->getPaymentMethodParams($order->payment->id);
-		if (empty($params->get('api_id')) || empty($params->get('api_secret')))
-		{
-			return false;
-		}
-
-		// Check order status
-		if (empty($order->status->id) || !in_array($order->status->id, $params->get('payment_available', [])))
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Method to get payment method params.
-	 *
-	 * @param   int  $pk  Payment method id.
-	 *
-	 * @return Registry Payment method params
-	 *
-	 * @since  1.0.0
-	 */
-	protected function getPaymentMethodParams($pk = null)
-	{
-		$pk = (int) $pk;
-		if (empty($pk)) return new Registry();
-
-		if ($this->_paymentMethodParams === null) $this->_paymentMethodParams = array();
-		if (!isset($this->_paymentMethodParams[$pk]))
-		{
-			$db                              = $this->db;
-			$query                           = $db->getQuery(true)
-				->select('params')
-				->from($db->quoteName('#__radicalmart_payment_methods'))
-				->where('id = ' . $pk);
-			$this->_paymentMethodParams[$pk] = ($result = $db->setQuery($query, 0, 1)->loadResult())
-				? new Registry($result) : new Registry();
-		}
-
-		return $this->_paymentMethodParams[$pk];
-	}
 
 	/**
 	 * Method to create transaction and redirect data to RadicalMart.
