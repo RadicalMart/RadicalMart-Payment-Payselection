@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
-	<fieldset name="settings">
-		<field type="payment_urls" label="COM_RADICALMART_PAYMENT_METHOD_URLS" plugin="payselection"/>
-	</fieldset>
+<form addfieldprefix="Joomla\Component\RadicalMart\Administrator\Field">
 	<fieldset name="settings_root" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT">
 		<fields name="params">
 			<field name="payment_available" type="statuses"
@@ -25,6 +22,10 @@
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_SECRET"
 				   autocomplete="false"
 				   required="true"/>
+			<field name="url_notify" type="copy_text"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_URL_NOTIFY"
+				   filter="unset"
+				   readonly="true"/>
 		</fields>
 	</fieldset>
 	<fieldset name="settings_receipt" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT">

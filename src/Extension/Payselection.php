@@ -14,12 +14,16 @@ namespace Joomla\Plugin\RadicalMartPayment\Payselection\Extension;
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\RadicalMart\Administrator\Helper\ParamsHelper as RadicalMartParamsHelper;
+use Joomla\Component\RadicalMart\Site\Model\PaymentModel as RadicalMartPaymentModel;
 use Joomla\Component\RadicalMartExpress\Administrator\Helper\ParamsHelper as RadicalMartExpressParamsHelper;
+use Joomla\Component\RadicalMartExpress\Site\Model\PaymentModel as RadicalMartExpressPaymentModel;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 
@@ -72,13 +76,56 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	{
 		return [
 			'onRadicalMartGetOrderPaymentMethods' => 'onGetOrderPaymentMethods',
+			'onRadicalMartGetOrderLogs'           => 'onGetOrderLogs',
 			'onRadicalMartCheckOrderPay'          => 'onCheckOrderPay',
 			'onRadicalMartPaymentPay'             => 'onPaymentPay',
+			'onRadicalMartPaymentCallback'        => 'onPaymentCallback',
+			'onRadicalMartPrepareMethodForm'      => 'onRadicalMartPrepareMethodForm',
 
 			'onRadicalMartExpressGetOrderPaymentMethods' => 'onGetOrderPaymentMethods',
+			'onRadicalMartExpressGetOrderLogs'           => 'onGetOrderLogs',
 			'onRadicalMartExpressCheckOrderPay'          => 'onCheckOrderPay',
 			'onRadicalMartExpressPaymentPay'             => 'onPaymentPay',
+			'onRadicalMartExpressPaymentCallback'        => 'onPaymentCallback',
+			'onRadicalMartExpressPrepareConfigForm'      => 'onRadicalMartExpressPrepareConfigForm',
 		];
+	}
+
+	/**
+	 * Set url_notify field default value in RadicalMart method form.
+	 *
+	 * @param   Form   $form     The form to be altered.
+	 * @param   mixed  $data     The associated data for the form.
+	 * @param   mixed  $tmpData  The temporary data for the form.
+	 *
+	 * @throws \Exception
+	 *
+	 * @since __DEPLOY_VERSION__
+	 */
+	public function onRadicalMartPrepareMethodForm(Form $form, $data = [], $tmpData = [])
+	{
+		$value = Uri::getInstance()->toString(['scheme', 'host', 'port'])
+			. '/' . RadicalMartParamsHelper::getComponentParams()
+				->get('payment_entry', 'radicalmart_payment') . '/payselection/callback';
+		$form->setFieldAttribute('url_notify', 'default', $value, 'params');
+	}
+
+	/**
+	 * Set url_notify field default value in RadicalMartExpress config form.
+	 *
+	 * @param   Form   $form  The form to be altered.
+	 * @param   mixed  $data  The associated data for the form.
+	 *
+	 * @throws \Exception
+	 *
+	 * @since __DEPLOY_VERSION__
+	 */
+	public function onRadicalMartExpressPrepareConfigForm(Form $form, $data = [])
+	{
+		$value = Uri::getInstance()->toString(['scheme', 'host', 'port'])
+			. '/' . RadicalMartExpressParamsHelper::getComponentParams()
+				->get('payment_entry', 'radicalmart_express_payment') . '/callback';
+		$form->setFieldAttribute('url_notify', 'default', $value, 'payment_method_params');
 	}
 
 	/**
@@ -104,6 +151,8 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 		$method->params->set('api_id', '');
 		$method->params->set('api_secret', '');
 
+		echo '<pre>', print_r($method->params, true), '</pre>';
+
 		// Add RadicalMartExpress payment enable statuses
 		if (strpos($context, 'com_radicalmart_express.') !== false)
 		{
@@ -118,6 +167,27 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 		$method->order->code        = $method->code;
 		$method->order->description = $method->description;
 		$method->order->price       = [];
+	}
+
+	/**
+	 * Method to display logs in RadicalMart & RadicalMart Express order.
+	 *
+	 * @param   string  $context  Context selector string.
+	 * @param   array   $log      Log data.
+	 *
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public function onGetOrderLogs(string $context, array &$log)
+	{
+		if ($log['action'] === 'payselection_paid')
+		{
+			$log['action_text'] = Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_LOGS_PAYSELECTION_PAID');
+			if (!empty($log['transaction_id']))
+			{
+				$log['message'] = Text::sprintf('PLG_RADICALMART_PAYMENT_PAYSELECTION_LOGS_PAYSELECTION_PAID_MESSAGE',
+					$log['transaction_id']);
+			}
+		}
 	}
 
 	/**
@@ -378,6 +448,197 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 		{
 			throw new \Exception('Payselection: ' . $e->getMessage(), $e->getCode());
 		}
+	}
+
+	/**
+	 * Method to set RadicalMart & RadicalMartExpress order pay status after payment.
+	 *
+	 * @param   array                                                    $input   Input data.
+	 * @param   RadicalMartPaymentModel| RadicalMartExpressPaymentModel  $model   RadicalMart model.
+	 * @param   Registry                                                 $params  RadicalMart params.
+	 *
+	 * @throws \Exception
+	 *
+	 * @since  __DEPLOY_VERSION__
+	 */
+	public function onPaymentCallback(string $context, array $input, $model, Registry $params)
+	{
+		// Add logger
+		Log::addLogger([
+			'text_file'         => 'plg_radicalmart_payment_payselection.php',
+			'text_entry_format' => "{DATETIME}\t{CLIENTIP}\t{MESSAGE}\t{PRIORITY}"],
+			Log::ALL, ['plg_radicalmart_payment_payselection']);
+
+		try
+		{
+			if (empty($input['TransactionId']))
+			{
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_TRANSACTION_NOT_FOUND'));
+			}
+
+			// Get order
+			if (empty($input['OrderId']))
+			{
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_ORDER_NOT_FOUND'));
+			}
+
+			if (!$order = $model->getOrder($input['OrderId']))
+			{
+				$messages = [];
+				foreach ($model->getErrors() as $error)
+				{
+					$messages[] = ($error instanceof \Exception) ? $error->getMessage() : $error;
+				}
+
+				if (empty($messages))
+				{
+					$messages[] = Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_ORDER_NOT_FOUND');
+				}
+
+				throw new \Exception(implode(PHP_EOL, $messages), 404);
+			}
+
+			// Check order payment method
+			if (empty($order->payment)
+				|| empty($order->payment->id)
+				|| empty($order->payment->plugin)
+				|| $order->payment->plugin !== 'payselection')
+			{
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_METHOD_NOT_FOUND'));
+			}
+
+			// Get method params
+			$params = $this->getMethodParams($context, $order->payment->id);
+			if (empty($params))
+			{
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'));
+			}
+			if (empty($params->get('api_id')) || empty($params->get('api_secret')))
+			{
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'));
+			}
+
+			// Check order status
+			if (empty($order->status->id) || !in_array($order->status->id, $params->get('payment_available', [])))
+			{
+				$this->app->close(200);
+
+				return;
+			}
+
+			// Get transaction
+			$transaction_id    = $input['TransactionId'];
+			$url               = 'https://gw.payselection.com/transactions/' . $transaction_id;
+			$site              = Uri::getInstance()->getHost();
+			$request_id        = md5('getTransaction' . '_' . $site . '_' . $transaction_id);
+			$request_signature = hash_hmac('sha256',
+				implode(PHP_EOL, array(
+					'GET',
+					'/transactions/' . $transaction_id,
+					$params->get('api_id'),
+					$request_id,
+					''))
+				, $params->get('api_secret'));
+			$headers           = array(
+				'Content-Type'        => 'application/json',
+				'X-SITE-ID'           => $params->get('api_id'),
+				'X-REQUEST-ID'        => $request_id,
+				'X-REQUEST-SIGNATURE' => $request_signature
+			);
+
+
+			// Send request
+			$http = new Http();
+			$http->setOption('transport.curl', array(
+				CURLOPT_SSL_VERIFYHOST => 0,
+				CURLOPT_SSL_VERIFYPEER => 0
+			));
+
+
+			// Parse request
+			$response = $http->get($url, $headers, 30);
+			$body     = $response->body;
+			if (empty($body))
+			{
+				$message = preg_replace('#^[0-9]*\s#', '', $response->headers['Status']);
+				throw new \Exception($message, $response->code);
+			}
+
+			$context = new Registry($body);
+			if ($response->code === 200)
+			{
+				$transaction = $context;
+			}
+			elseif ($response->code === 404)
+			{
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_TRANSACTION_NOT_FOUND'), 404);
+			}
+			else
+			{
+				throw new \Exception($context->get('Code'), $response->code);
+			}
+			$transaction_id = str_replace(['PS00000', 'GE00000'], '', $transaction->get('TransactionId'));
+
+			// Get order
+			if ($transaction->get('OrderId') !== $order->number)
+			{
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_ORDER_NOT_FOUND'));
+			}
+
+			// Check transaction state
+			if ($transaction->get('TransactionState') !== 'success')
+			{
+				$this->app->close(200);
+
+				return;
+			}
+
+			// Add log
+			$addLog = true;
+			foreach ($order->logs as $log)
+			{
+				if ($log['action'] === 'payselection_paid' && $log['transaction_id'] === $transaction_id)
+				{
+					$addLog = false;
+					break;
+				}
+			}
+			if ($addLog)
+			{
+				$model->addLog($order->id, 'payselection_paid', [
+					'plugin'         => 'payselection',
+					'group'          => 'radicalmart_payment',
+					'transaction_id' => $transaction_id,
+					'user_id'        => -1
+				]);
+			}
+
+			// Set paid status
+			$paidStatus = (int) $params->get('paid_status', 0);
+			if (!empty($paidStatus))
+			{
+				if (!$model->updateStatus($order->id, $paidStatus, false, -1))
+				{
+					$messages = [];
+					foreach ($model->getErrors() as $error)
+					{
+						$messages[] = ($error instanceof \Exception) ? $error->getMessage() : $error;
+					}
+
+					throw new \Exception(implode(PHP_EOL, $messages));
+				}
+			}
+
+			$this->app->close(200);
+		}
+		catch (\Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR, 'plg_radicalmart_payment_payselection');
+
+			throw new \Exception('Payselection: ' . $e->getMessage(), 500);
+		}
+
+		$this->app->close(200);
 	}
 
 	/**
