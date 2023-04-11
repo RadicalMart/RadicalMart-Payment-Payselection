@@ -151,8 +151,6 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 		$method->params->set('api_id', '');
 		$method->params->set('api_secret', '');
 
-		echo '<pre>', print_r($method->params, true), '</pre>';
-
 		// Add RadicalMartExpress payment enable statuses
 		if (strpos($context, 'com_radicalmart_express.') !== false)
 		{
