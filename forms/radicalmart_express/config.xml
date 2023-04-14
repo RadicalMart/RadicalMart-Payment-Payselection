@@ -1,22 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
-	<fieldset name="settings">
-		<field type="payment_urls" label="COM_RADICALMART_PAYMENT_METHOD_URLS" plugin="payselection"/>
+<form addfieldprefix="Joomla\Component\RadicalMartExpress\Administrator\Field">
+	<fieldset name="payment_root">
+		<field name="payment_urls" type="hidden"
+			   label="COM_RADICALMART_EXPRESS_PAYMENT_METHOD_URLS"
+			   filter="unset"/>
 	</fieldset>
-	<fieldset name="settings_root" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT">
-		<fields name="params">
-			<field name="payment_available" type="statuses"
-				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT_AVAILABLE"
-				   hint=" "
-				   multiple="true"
-				   required="true"
-				   layout="joomla.form.field.list-fancy-select"/>
-			<field name="paid_status" type="statuses"
-				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAID_STATUS"
-				   required="true"
-				   layout="joomla.form.field.list-fancy-select">
-				<option value="">COM_RADICALMART_STATUS_SELECT</option>
-			</field>
+	<fieldset name="payment_settings" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT">
+		<fields name="payment_method_params">
 			<field name="api_id" type="text"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_ID"
 				   autocomplete="false"
@@ -25,10 +15,14 @@
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_API_SECRET"
 				   autocomplete="false"
 				   required="true"/>
+			<field name="url_notify" type="copy_text"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_URL_NOTIFY"
+				   filter="unset"
+				   readonly="true"/>
 		</fields>
 	</fieldset>
-	<fieldset name="settings_receipt" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT">
-		<fields name="params">
+	<fieldset name="payment_receipt" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT">
+		<fields name="payment_method_params">
 			<field name="receipt" type="radio"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_LABEL"
 				   class="btn-group btn-group-yesno"
@@ -53,7 +47,7 @@
 				<option value="4">PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_PAYMENTS_TYPE_4</option>
 			</field>
 			<field type="note"
-				   label="COM_RADICALMART_PRODUCT"
+				   label="COM_RADICALMART_EXPRESS_PRODUCT"
 				   showon="receipt:1"/>
 			<field name="receipt_items_product_payment_method" type="list"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD"
@@ -188,7 +182,7 @@
 				</option>
 			</field>
 			<field type="note"
-				   label="COM_RADICALMART_SHIPPING"
+				   label="COM_RADICALMART_EXPRESS_SHIPPING"
 				   showon="receipt:1"/>
 			<field name="receipt_items_shipping_payment_method" type="list"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_ITEMS_PAYMENT_METHOD"
