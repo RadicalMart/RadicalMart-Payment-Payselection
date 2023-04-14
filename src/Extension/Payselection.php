@@ -2,7 +2,7 @@
 /*
  * @package     RadicalMart Payment Payselection Plugin
  * @subpackage  plg_radicalmart_payment_payselection
- * @version     __DEPLOY_VERSION__
+ * @version     2.0.0
  * @author      Delo Design - delo-design.ru
  * @copyright   Copyright (c) 2023 Delo Design. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
@@ -52,7 +52,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @var  bool
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0
 	 */
 	public bool $radicalmart = true;
 
@@ -61,7 +61,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @var  bool
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0
 	 */
 	public bool $radicalmart_express = true;
 
@@ -70,7 +70,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return  array
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   2.0.0
 	 */
 	public static function getSubscribedEvents(): array
 	{
@@ -100,7 +100,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @throws \Exception
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.0.0
 	 */
 	public function onRadicalMartPrepareMethodForm(Form $form, $data = [], $tmpData = [])
 	{
@@ -118,7 +118,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @throws \Exception
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.0.0
 	 */
 	public function onRadicalMartExpressPrepareConfigForm(Form $form, $data = [])
 	{
@@ -139,7 +139,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @throws  \Exception
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0
 	 */
 	public function onGetOrderPaymentMethods(string $context, object $method, array $formData,
 	                                         array  $products, array $currency)
@@ -173,7 +173,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 * @param   string  $context  Context selector string.
 	 * @param   array   $log      Log data.
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0
 	 */
 	public function onGetOrderLogs(string $context, array &$log)
 	{
@@ -198,7 +198,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return boolean True if can pay, False if not.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.0.0
 	 */
 	public function onCheckOrderPay(string $context, object $order): bool
 	{
@@ -244,7 +244,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return  array  Payment redirect data on success.
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0
 	 */
 	public function onPaymentPay(string $context, object $order, array $links, Registry $params): array
 	{
@@ -457,7 +457,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @throws \Exception
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0
 	 */
 	public function onPaymentCallback(string $context, array $input, $model, Registry $params)
 	{
@@ -647,7 +647,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return false|Registry Method prams registry object on success, False on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.0.0
 	 */
 	protected function getMethodParams(string $context, int $pk)
 	{

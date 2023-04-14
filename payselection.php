@@ -2,7 +2,7 @@
 /*
  * @package     RadicalMart Payment Payselection Plugin
  * @subpackage  plg_radicalmart_payment_payselection
- * @version     __DEPLOY_VERSION__
+ * @version     2.0.0
  * @author      Delo Design - delo-design.ru
  * @copyright   Copyright (c) 2023 Delo Design. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
@@ -66,7 +66,7 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 	 *
 	 * @var  bool
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0
 	 */
 	public bool $radicalmart = true;
 
@@ -75,7 +75,7 @@ class plgRadicalMart_PaymentPayselection extends CMSPlugin
 	 *
 	 * @var  bool
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0
 	 */
 	public bool $radicalmart_express = true;
 
