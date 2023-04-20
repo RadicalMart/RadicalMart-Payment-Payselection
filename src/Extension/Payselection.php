@@ -402,19 +402,19 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 				, $params->get('api_secret')
 			);
 
-			$headers = array(
+			$headers = [
 				'Content-Type'        => 'application/json',
 				'X-SITE-ID'           => $params->get('api_id'),
 				'X-REQUEST-ID'        => $request_id,
 				'X-REQUEST-SIGNATURE' => $request_signature
-			);
+			];
 
 			// Send request
 			$http = new Http();
-			$http->setOption('transport.curl', array(
+			$http->setOption('transport.curl', [
 				CURLOPT_SSL_VERIFYHOST => 0,
 				CURLOPT_SSL_VERIFYPEER => 0
-			));
+			]);
 			$response = $http->post($url, $data, $headers);
 			$body     = $response->body;
 			if (empty($body))
@@ -530,31 +530,29 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			$site              = Uri::getInstance()->getHost();
 			$request_id        = md5('getTransaction' . '_' . $site . '_' . $transaction_id);
 			$request_signature = hash_hmac('sha256',
-				implode(PHP_EOL, array(
+				implode(PHP_EOL, [
 					'GET',
 					'/transactions/' . $transaction_id,
 					$params->get('api_id'),
 					$request_id,
-					''))
+					''])
 				, $params->get('api_secret'));
-			$headers           = array(
+			$headers           = [
 				'Content-Type'        => 'application/json',
 				'X-SITE-ID'           => $params->get('api_id'),
 				'X-REQUEST-ID'        => $request_id,
 				'X-REQUEST-SIGNATURE' => $request_signature
-			);
-
+			];
 
 			// Send request
 			$http = new Http();
-			$http->setOption('transport.curl', array(
+			$http->setOption('transport.curl', [
 				CURLOPT_SSL_VERIFYHOST => 0,
 				CURLOPT_SSL_VERIFYPEER => 0
-			));
-
+			]);
 
 			// Parse request
-			$response = $http->get($url, $headers, 30);
+			$response = $http->get($url, $headers);
 			$body     = $response->body;
 			if (empty($body))
 			{
