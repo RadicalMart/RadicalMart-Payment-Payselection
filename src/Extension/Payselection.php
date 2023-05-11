@@ -421,7 +421,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			{
 				$message = preg_replace('#^[0-9]*\s#', '', $response->headers['Status']);
 
-				throw new \Exception('Payselection: ' . $message, $response->code);
+				throw new \Exception($message, $response->code);
 			}
 
 			$context = json_decode($body);
@@ -435,7 +435,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			}
 			else
 			{
-				throw new \Exception('Payselection: ' . $context->Code, $response->code);
+				throw new \Exception($context->Code, $response->code);
 			}
 
 			$result['link'] = $link;
@@ -444,7 +444,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 		}
 		catch (\Exception $e)
 		{
-			throw new \Exception('Payselection: ' . $e->getMessage(), $e->getCode());
+			throw new \Exception('Payselection: ' . $e->getCode() . ' - ' . $e->getMessage(), 500, $e);
 		}
 	}
 
@@ -631,7 +631,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 		{
 			Log::add($e->getMessage(), Log::ERROR, 'plg_radicalmart_payment_payselection');
 
-			throw new \Exception('Payselection: ' . $e->getMessage(), 500);
+			throw new \Exception('Payselection: ' . $e->getMessage(), 500, $e);
 		}
 
 		$this->app->close(200);
