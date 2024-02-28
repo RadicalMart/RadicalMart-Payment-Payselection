@@ -39,15 +39,6 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	protected $autoloadLanguage = true;
 
 	/**
-	 * Loads the application object.
-	 *
-	 * @var  \Joomla\CMS\Application\CMSApplication
-	 *
-	 * @since  1.2.0
-	 */
-	protected $app = null;
-
-	/**
 	 * Enable on RadicalMart
 	 *
 	 * @var  bool
@@ -471,6 +462,8 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			'text_entry_format' => "{DATETIME}\t{CLIENTIP}\t{MESSAGE}\t{PRIORITY}"],
 			Log::ALL, ['plg_radicalmart_payment_payselection']);
 
+		$app = $this->getApplication();
+
 		try
 		{
 			if (empty($input['TransactionId']))
@@ -523,7 +516,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			// Check order status
 			if (empty($order->status->id) || !in_array($order->status->id, $params->get('payment_available', [])))
 			{
-				$this->app->close(200);
+				$app->close(200);
 
 				return;
 			}
@@ -588,7 +581,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			// Check transaction state
 			if ($transaction->get('TransactionState') !== 'success')
 			{
-				$this->app->close(200);
+				$app->close(200);
 
 				return;
 			}
@@ -629,7 +622,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 				}
 			}
 
-			$this->app->close(200);
+			$app->close(200);
 		}
 		catch (\Exception $e)
 		{
@@ -638,7 +631,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			throw new \Exception('Payselection: ' . $e->getMessage(), 500, $e);
 		}
 
-		$this->app->close(200);
+		$app->close(200);
 	}
 
 	/**
