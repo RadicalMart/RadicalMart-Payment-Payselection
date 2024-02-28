@@ -2,11 +2,11 @@
 <extension version="3.9" type="plugin" group="radicalmart_payment" method="upgrade">
 	<name>PLG_RADICALMART_PAYMENT_PAYSELECTION</name>
 	<author>Delo Design</author>
-	<creationDate>April 2023</creationDate>
-	<copyright>Copyright © 2021 Delo Design. All rights reserved.</copyright>
+	<creationDate>February 2024</creationDate>
+	<copyright>Copyright © 2021 RadicalMart. All rights reserved.</copyright>
 	<license>https://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
-	<authorEmail>boss@delo-design.ru</authorEmail>
-	<authorUrl>https://delo-design.ru</authorUrl>
+	<authorEmail>info@radicalmart.ru</authorEmail>
+	<authorUrl>https://radicalmart.ru</authorUrl>
 	<version>2.0.1-dev</version>
 	<description>PLG_RADICALMART_PAYMENT_PAYSELECTION_DESCRIPTION</description>
 	<namespace path="src">Joomla\Plugin\RadicalMartPayment\Payselection</namespace>

@@ -3,10 +3,10 @@
  * @package     RadicalMart Payment Payselection Plugin
  * @subpackage  plg_radicalmart_payment_payselection
  * @version     __DEPLOY_VERSION__
- * @author      Delo Design - delo-design.ru
- * @copyright   Copyright (c) 2023 Delo Design. All rights reserved.
+ * @author      RadicalMart Team - radicalmart.ru
+ * @copyright   Copyright (c) 2024 RadicalMart. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
- * @link        https://delo-design.ru/
+ * @link        https://radicalmart.ru/
  */
 
 \defined('_JEXEC') or die;
@@ -22,6 +22,8 @@ use Joomla\CMS\Version;
 use Joomla\Database\DatabaseDriver;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
+use Joomla\Filesystem\File;
+use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
 
 return new class () implements ServiceProviderInterface {
@@ -311,6 +313,33 @@ return new class () implements ServiceProviderInterface {
 				catch (Exception $e)
 				{
 					$this->app->enqueueMessage($e->getMessage(), 'error');
+				}
+			}
+
+			/**
+			 * Method to update to 2.1.0 version.
+			 *
+			 * @since  __DEPLOY_VERSION__
+			 */
+			protected function update2_1_0()
+			{
+				$folders = [
+					Path::clean(JPATH_ROOT . '/administrator/language/en-GB'),
+					Path::clean(JPATH_ROOT . '/administrator/language/ru-RU'),
+				];
+
+				// Remove old language files
+				foreach ($folders as $folder)
+				{
+					$files = Folder::files($folder, '.plg_radicalmart_payment_payselection.', true, true);
+
+					foreach ($files as $file)
+					{
+						if (strpos($file, '.plg_radicalmart_payment_payselection.') !== false)
+						{
+							File::delete($file);
+						}
+					}
 				}
 			}
 		});
