@@ -12,18 +12,17 @@
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Application\AdministratorApplication;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\File;
-use Joomla\CMS\Filesystem\Path;
+use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\Installer\InstallerAdapter;
+use Joomla\CMS\Installer\InstallerHelper;
 use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Version;
 use Joomla\Database\DatabaseDriver;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use Joomla\Registry\Registry;
+use Joomla\Filesystem\Path;
 
 return new class () implements ServiceProviderInterface {
 	public function register(Container $container)
@@ -73,7 +72,7 @@ return new class () implements ServiceProviderInterface {
 			 * @since  2.0.0
 			 */
 			protected array $updateMethods = [
-				'update2_0_0'
+				'update2_1_0'
 			];
 
 			/**
@@ -151,12 +150,6 @@ return new class () implements ServiceProviderInterface {
 					return false;
 				}
 
-				if ($type === 'update')
-				{
-					// Check update server
-					$this->changeUpdateServer();
-				}
-
 				return true;
 			}
 
@@ -173,44 +166,24 @@ return new class () implements ServiceProviderInterface {
 			public function postflight(string $type, InstallerAdapter $adapter): bool
 			{
 				$installer = $adapter->getParent();
-				// Run updates script
-				if ($type === 'update')
+				if ($type !== 'uninstall')
 				{
-					foreach ($this->updateMethods as $method)
+					$this->checkFiscalizationInstaller($installer);
+
+					// Run updates script
+					if ($type === 'update')
 					{
-						if (method_exists($this, $method))
+						foreach ($this->updateMethods as $method)
 						{
-							$this->$method($adapter);
+							if (method_exists($this, $method))
+							{
+								$this->$method($adapter);
+							}
 						}
 					}
 				}
 
 				return true;
-			}
-
-			/**
-			 * Method to change current update server.
-			 *
-			 * @throws  \Exception
-			 *
-			 * @since  1.0.1
-			 */
-			protected function changeUpdateServer()
-			{
-				$old = 'https://radicalmart.ru/update?element=plg_radicalmart_payment_payselection';
-				$new = 'https://sovmart.ru/update?element=plg_radicalmart_payment_payselection';
-
-				$db    = $this->db;
-				$query = $db->getQuery(true)
-					->select(['update_site_id', 'location'])
-					->from($db->quoteName('#__update_sites'))
-					->where($db->quoteName('location') . ' = :location')
-					->bind(':location', $old);
-				if ($update = $db->setQuery($query)->loadObject())
-				{
-					$update->location = $new;
-					$db->updateObject('#__update_sites', $update, 'update_site_id');
-				}
 			}
 
 			/**
@@ -268,54 +241,76 @@ return new class () implements ServiceProviderInterface {
 			}
 
 			/**
-			 * Method to update to 2.0.0 version.
+			 * Method to check fiscalization plugin and install if needed.
 			 *
-			 * @since  2.0.0
+			 * @param   Installer|null  $installer  Installer calling object.
+			 *
+			 * @throws  \Exception
+			 *
+			 * @since  __DEPLOY_VERSION__
 			 */
-			protected function update2_0_0()
+			protected function checkFiscalizationInstaller(Installer $installer = null)
 			{
-				// Update Radicalmart Express params
-				if (ComponentHelper::isEnabled('com_radicalmart_express'))
+				try
 				{
-					$params = ComponentHelper::getParams('com_radicalmart_express')->toArray();
-					if (isset($params['payselection_api_id']) && !empty($params['payment_method_plugin'])
-						&& $params['payment_method_plugin'] === 'payselection')
+					// Find extension
+					$db    = $this->db;
+					$query = $db->getQuery(true)
+						->select('extension_id')
+						->from($db->quoteName('#__extensions'))
+						->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+						->where($db->quoteName('element') . ' = ' . $db->quote('fiscalization'))
+						->where($db->quoteName('folder') . ' = ' . $db->quote('radicalmart'));
+					if (!$db->setQuery($query, 0, 1)->loadResult())
 					{
+						// Download extension
+						$src  = 'https://sovmart.ru/download?element=plg_radicalmart_fiscalization';
+						$dest = Path::clean($installer->getPath('source') . '/plg_radicalmart_fiscalization.zip');
 
-						if (!isset($params['payment_method_params']))
+						if (!$context = file_get_contents($src))
 						{
-							$params['payment_method_params'] = [];
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_DOWNLOAD'), -1);
 						}
-						foreach ($params as $key => $value)
+						if (!file_put_contents($dest, $context))
 						{
-							if (strpos($key, 'payselection_') !== false)
-							{
-								$params['payment_method_params'][str_replace('payselection_', '', $key)] = $value;
-								unset($params[$key]);
-
-							}
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_DOWNLOAD'), -1);
 						}
 
-						$update               = new \stdClass();
-						$update->extension_id = ComponentHelper::getComponent('com_radicalmart_express')->id;
-						$update->params       = (new Registry($params))->toString();
+						// Install extension
+						if (!$package = InstallerHelper::unpack($dest, true))
+						{
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_INSTALL'), -1);
+						}
 
-						$this->db->updateObject('#__extensions', $update, 'extension_id');
+						if (!$package['type'])
+						{
+							InstallerHelper::cleanupInstall(null, $package['extractdir']);
+
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_INSTALL'), -1);
+						}
+
+						$installer = Installer::getInstance();
+						$installer->setPath('source', $package['dir']);
+						if (!$installer->findManifest())
+						{
+							InstallerHelper::cleanupInstall(null, $package['extractdir']);
+
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_INSTALL'), -1);
+						}
+
+						if (!$installer->install($package['dir']))
+						{
+							InstallerHelper::cleanupInstall(null, $package['extractdir']);
+
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_INSTALL'), -1);
+						}
+
+						InstallerHelper::cleanupInstall(null, $package['extractdir']);
 					}
 				}
-
-				// Delete files
-				$files = [
-					'/plugins/radicalmart_payment/payselection/forms/express.xml',
-					'/plugins/radicalmart_payment/payselection/forms/paymentmethod.xml',
-				];
-				foreach ($files as $file)
+				catch (Exception $e)
 				{
-					$path = Path::clean(JPATH_ROOT . '/' . $file);
-					if (File::exists($path))
-					{
-						File::delete($path);
-					}
+					$this->app->enqueueMessage($e->getMessage(), 'error');
 				}
 			}
 		});

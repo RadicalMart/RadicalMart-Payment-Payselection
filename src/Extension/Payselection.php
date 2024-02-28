@@ -236,9 +236,10 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Method to create transaction and redirect data to RadicalMart & RadicalMartExpress.
 	 *
-	 * @param   object    $order   Order data object.
-	 * @param   array     $links   Plugin links.
-	 * @param   Registry  $params  Component params.
+	 * @param   string    $context  Context selector string.
+	 * @param   object    $order    Order data object.
+	 * @param   array     $links    Plugin links.
+	 * @param   Registry  $params   Component params.
 	 *
 	 * @throws  \Exception
 	 *
@@ -284,8 +285,10 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			}
 
 			// Prepare data
-			$amount = number_format($order->total['final'], 2, '.', '');
-			$data   = [
+			$amount = (!empty($order->receipt)) ? $order->receipt->amount : $order->total['final'];
+			$amount = number_format($amount, 2, '.', '');
+
+			$data = [
 				'MetaData'       => [
 					'PaymentType' => 'Pay'
 				],
@@ -301,7 +304,8 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 				],
 			];
 
-			if ((int) $params->get('receipt', 0) === 1)
+			// Receipt
+			if ((int) $params->get('receipt', 0) === 1 && !empty($order->receipt))
 			{
 				$data['ReceiptData'] = [
 					'timestamp'   => Factory::getDate()->format('d.m.Y h:m:s'),
@@ -316,10 +320,10 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 						'payments' => [
 							[
 								'type' => (int) $params->get('receipt_payments_type', 0),
-								'sum'  => $order->total['final'],
+								'sum'  => $order->receipt->amount,
 							]
 						],
-						'total'    => $order->total['final']
+						'total'    => $order->receipt->amount
 					]
 				];
 
@@ -347,41 +351,41 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 					$data['ReceiptData']['receipt']['client']['phone'] = $order->contacts['phone'];
 				}
 
-				// Add products
-				foreach ($order->products as $product)
+				$measure_codes = [
+					'mm'       => 255,
+					'cm'       => 20,
+					'in'       => 255,
+					'ft'       => 255,
+					'm '       => 22,
+					'm2'       => 32,
+					'm3'       => 42,
+					'linear_m' => 255,
+					'g'        => 10,
+					'kg'       => 11,
+					't'        => 12,
+					'lb'       => 255,
+					'ozt'      => 255,
+					'pcs'      => 0,
+					'ml'       => 40,
+					'l'        => 41,
+				];
+				foreach ($order->receipt->items as $item)
 				{
-					$data['ReceiptData']['receipt']['items'][] = [
-						'name'           => $product->title,
-						'price'          => $product->order['base'],
-						'quantity'       => $product->order['quantity'],
-						'sum'            => $product->order['sum_final'],
-						'payment_method' => $params->get('receipt_items_product_payment_method', 'full_payment'),
-						'payment_object' => $params->get('receipt_items_product_payment_object', 'commodity'),
-						'vat'            => ['type' => $params->get('receipt_items_product_vat_type', 'none')]
-					];
-				}
+					$measure = (isset($measure_codes[$item['measurement_unit']]))
+						? $measure_codes[$item['measurement_unit']] : 255;
 
-				// Add shipping
-				if (!empty($order->shipping) && !empty($order->shipping->order)
-					&& !empty($order->shipping->order->price)
-					&& (!empty($order->shipping->order->price['base']) || !empty($order->shipping->order->price['final']))
-				)
-				{
-					$shipping = $order->shipping;
-					$base     = (!empty($shipping->order->price['base']))
-						? $shipping->order->price['base'] : $shipping->order->price['final'];
-					$final    = (!empty($shipping->order->price['final']))
-						? $shipping->order->price['final'] : $shipping->order->price['base'];
-
-					$data['ReceiptData']['receipt']['items'][] = [
-						'name'           => (!empty($shipping->order->title)) ? $shipping->order->title : $shipping->title,
-						'price'          => $base,
-						'quantity'       => 1,
-						'sum'            => $final,
-						'payment_method' => $params->get('receipt_items_shipping_payment_method', 'full_payment'),
-						'payment_object' => $params->get('receipt_items_shipping_payment_object', 'service'),
-						'vat'            => ['type' => $params->get('receipt_items_shipping_vat_type', 'none')]
+					$item = [
+						'name'           => $item['name'],
+						'price'          => $item['price'],
+						'quantity'       => $item['quantity'],
+						'sum'            => $item['sum'],
+						'measure'        => $measure,
+						'payment_method' => $item['payment_method'],
+						'payment_object' => $item['payment_object'],
+						'vat'            => ['type' => $item['vat']['type']]
 					];
+
+					$data['ReceiptData']['receipt']['items'][] = $item;
 				}
 			}
 

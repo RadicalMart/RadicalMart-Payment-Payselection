@@ -12,10 +12,10 @@
 	<namespace path="src">Joomla\Plugin\RadicalMartPayment\Payselection</namespace>
 	<scriptfile>script.php</scriptfile>
 	<languages folder="language">
-		<language tag="en-GB">en-GB/en-GB.plg_radicalmart_payment_payselection.ini</language>
-		<language tag="en-GB">en-GB/en-GB.plg_radicalmart_payment_payselection.sys.ini</language>
-		<language tag="ru-RU">ru-RU/ru-RU.plg_radicalmart_payment_payselection.ini</language>
-		<language tag="ru-RU">ru-RU/ru-RU.plg_radicalmart_payment_payselection.sys.ini</language>
+		<language tag="en-GB">en-GB/plg_radicalmart_payment_payselection.ini</language>
+		<language tag="en-GB">en-GB/plg_radicalmart_payment_payselection.sys.ini</language>
+		<language tag="ru-RU">ru-RU/plg_radicalmart_payment_payselection.ini</language>
+		<language tag="ru-RU">ru-RU/plg_radicalmart_payment_payselection.sys.ini</language>
 	</languages>
 	<files>
 		<folder>forms</folder>
