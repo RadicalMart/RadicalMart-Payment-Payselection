@@ -2,7 +2,7 @@
 /*
  * @package     RadicalMart Payment Payselection Plugin
  * @subpackage  plg_radicalmart_payment_payselection
- * @version     __DEPLOY_VERSION__
+ * @version     2.1.0
  * @author      RadicalMart Team - radicalmart.ru
  * @copyright   Copyright (c) 2024 RadicalMart. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
@@ -249,7 +249,7 @@ return new class () implements ServiceProviderInterface {
 			 *
 			 * @throws  \Exception
 			 *
-			 * @since  __DEPLOY_VERSION__
+			 * @since  2.1.0
 			 */
 			protected function checkFiscalizationInstaller(Installer $installer = null)
 			{
@@ -319,7 +319,7 @@ return new class () implements ServiceProviderInterface {
 			/**
 			 * Method to update to 2.1.0 version.
 			 *
-			 * @since  __DEPLOY_VERSION__
+			 * @since  2.1.0
 			 */
 			protected function update2_1_0()
 			{
