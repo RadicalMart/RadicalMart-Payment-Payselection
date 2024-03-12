@@ -271,24 +271,24 @@ return new class () implements ServiceProviderInterface {
 
 						if (!$context = file_get_contents($src))
 						{
-							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_DOWNLOAD'), -1);
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_FISCALIZATION_DOWNLOAD'), -1);
 						}
 						if (!file_put_contents($dest, $context))
 						{
-							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_DOWNLOAD'), -1);
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_FISCALIZATION_DOWNLOAD'), -1);
 						}
 
 						// Install extension
 						if (!$package = InstallerHelper::unpack($dest, true))
 						{
-							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_INSTALL'), -1);
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_FISCALIZATION_INSTALL'), -1);
 						}
 
 						if (!$package['type'])
 						{
 							InstallerHelper::cleanupInstall(null, $package['extractdir']);
 
-							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_INSTALL'), -1);
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_FISCALIZATION_INSTALL'), -1);
 						}
 
 						$installer = Installer::getInstance();
@@ -297,14 +297,14 @@ return new class () implements ServiceProviderInterface {
 						{
 							InstallerHelper::cleanupInstall(null, $package['extractdir']);
 
-							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_INSTALL'), -1);
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_FISCALIZATION_INSTALL'), -1);
 						}
 
 						if (!$installer->install($package['dir']))
 						{
 							InstallerHelper::cleanupInstall(null, $package['extractdir']);
 
-							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_ERROR_FISCALIZATION_INSTALL'), -1);
+							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_FISCALIZATION_INSTALL'), -1);
 						}
 
 						InstallerHelper::cleanupInstall(null, $package['extractdir']);
