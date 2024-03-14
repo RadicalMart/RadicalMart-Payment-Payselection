@@ -286,7 +286,7 @@ return new class () implements ServiceProviderInterface {
 
 						if (!$package['type'])
 						{
-							InstallerHelper::cleanupInstall(null, $package['extractdir']);
+							InstallerHelper::cleanupInstall('', $package['extractdir']);
 
 							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_FISCALIZATION_INSTALL'), -1);
 						}
@@ -295,19 +295,19 @@ return new class () implements ServiceProviderInterface {
 						$installer->setPath('source', $package['dir']);
 						if (!$installer->findManifest())
 						{
-							InstallerHelper::cleanupInstall(null, $package['extractdir']);
+							InstallerHelper::cleanupInstall('', $package['extractdir']);
 
 							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_FISCALIZATION_INSTALL'), -1);
 						}
 
 						if (!$installer->install($package['dir']))
 						{
-							InstallerHelper::cleanupInstall(null, $package['extractdir']);
+							InstallerHelper::cleanupInstall('', $package['extractdir']);
 
 							throw new Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_FISCALIZATION_INSTALL'), -1);
 						}
 
-						InstallerHelper::cleanupInstall(null, $package['extractdir']);
+						InstallerHelper::cleanupInstall('', $package['extractdir']);
 					}
 				}
 				catch (Exception $e)
