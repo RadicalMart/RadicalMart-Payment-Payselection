@@ -55,4 +55,22 @@
 			</field>
 		</fields>
 	</fieldset>
+	<fieldset name="settings_debug" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_DEBUG">
+		<fields name="params">
+			<field name="debug_payment_pay" type="radio"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_DEBUG_PAYMENT_PAY"
+				   class="btn-group btn-group-yesno"
+				   default="0">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field name="debug_payment_callback" type="radio"
+				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_DEBUG_PAYMENT_CALLBACK"
+				   class="btn-group btn-group-yesno"
+				   default="0">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+		</fields>
+	</fieldset>
 </form>

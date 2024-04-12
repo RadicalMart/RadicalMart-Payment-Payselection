@@ -20,11 +20,13 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Component\RadicalMart\Administrator\Helper\DebugHelper as RadicalMartDebugHelper;
 use Joomla\Component\RadicalMart\Administrator\Helper\ParamsHelper as RadicalMartParamsHelper;
 use Joomla\Component\RadicalMart\Site\Model\PaymentModel as RadicalMartPaymentModel;
 use Joomla\Component\RadicalMartExpress\Administrator\Helper\ParamsHelper as RadicalMartExpressParamsHelper;
 use Joomla\Component\RadicalMartExpress\Site\Model\PaymentModel as RadicalMartExpressPaymentModel;
 use Joomla\Event\SubscriberInterface;
+use Joomla\Plugin\RadicalMartPayment\Payselection\Helper\LogHelper;
 use Joomla\Registry\Registry;
 
 class Payselection extends CMSPlugin implements SubscriberInterface
@@ -240,6 +242,13 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 */
 	public function onPaymentPay(string $context, object $order, array $links, Registry $params): array
 	{
+		$debug    = false;
+		$data     = false;
+		$contents = false;
+
+		$debugger     = 'payment.pay';
+		$debuggerFile = 'site_payment_controller.php';
+		$this->componentDebug($context, 'addDebug', [$debugger, $debuggerFile, 'Request in plugin']);
 		try
 		{
 			$result = [
@@ -248,11 +257,16 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			];
 
 			// Check order payment method
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction = 'Check payment method', 'start']);
 			if (empty($order->payment)
 				|| empty($order->payment->id)
 				|| empty($order->payment->plugin)
 				|| $order->payment->plugin !== 'payselection')
 			{
+				$this->componentDebug($context, 'addDebug',
+					[$debugger, $debuggerFile, $debugAction, 'error', 'Incorrect plugin']);
+
 				return $result;
 			}
 
@@ -263,10 +277,10 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'));
 			}
 
-			// Check access
-			if (empty($params->get('api_id')) || empty($params->get('api_secret')))
+			// Set Debug
+			if ((int) $params->get('debug_payment_pay', 0) === 1)
 			{
-				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'));
+				$debug = 'payment.pay';
 			}
 
 			// Check order status
@@ -274,6 +288,11 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			{
 				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_PAYMENT_NOT_AVAILABLE'));
 			}
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction, 'success', null, [], null, false]);
+
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction = 'Prepare api request data', 'start']);
 
 			// Prepare data
 			$amount = (!empty($order->receipt)) ? $order->receipt->amount : $order->total['final'];
@@ -365,43 +384,47 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 					$measure = (isset($measure_codes[$item['measurement_unit']]))
 						? $measure_codes[$item['measurement_unit']] : 255;
 
-					$item = [
-						'name'           => $item['name'],
-						'price'          => $item['price'],
-						'quantity'       => $item['quantity'],
-						'sum'            => $item['sum'],
-						'measure'        => $measure,
-						'payment_method' => $item['payment_method'],
-						'payment_object' => $item['payment_object'],
-						'vat'            => ['type' => $item['vat']['type']]
+					$data['ReceiptData']['receipt']['items'][] = [
+						'name'             => $item['name'],
+						'price'            => $item['price'],
+						'quantity'         => $item['quantity'],
+						'sum'              => $item['sum'],
+						'measurement_unit' => (string) $measure,
+						'payment_method'   => $item['payment_method'],
+						'payment_object'   => $item['payment_object'],
+						'vat'              => ['type' => $item['vat']['type']]
 					];
-
-					$data['ReceiptData']['receipt']['items'][] = $item;
 				}
 			}
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction, 'success']);
 
-			// Convert data
-			$data = json_encode($data);
 
-			// Prepare request
-			$url               = 'https://webform.payselection.com/webpayments/create';
-			$site              = Uri::getInstance()->getHost();
-			$request_id        = md5('createTransaction' . '_' . $site . '_' . $data);
-			$request_signature = hash_hmac('sha256',
-				implode(PHP_EOL, [
-					'POST',
-					'/webpayments/create',
-					$params->get('api_id'),
-					$request_id,
-					$data])
-				, $params->get('api_secret')
-			);
+			// Check access
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction = 'Send api request', 'start']);
+			if (empty($params->get('api_id')) || empty($params->get('api_secret')))
+			{
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'));
+			}
 
-			$headers = [
+			// Prepare request data
+			$request_path      = '/webpayments/create';
+			$request_url       = 'https://webform.payselection.com' . $request_path;
+			$request_data      = json_encode($data);
+			$request_id        = md5(serialize([$request_path, Uri::getInstance()->getHost(), $request_data]));
+			$request_signature = hash_hmac('sha256', implode(PHP_EOL, [
+				'POST',
+				$request_path,
+				$params->get('api_id'),
+				$request_id,
+				$request_data
+			]), $params->get('api_secret'));
+			$request_headers   = [
 				'Content-Type'        => 'application/json',
 				'X-SITE-ID'           => $params->get('api_id'),
 				'X-REQUEST-ID'        => $request_id,
-				'X-REQUEST-SIGNATURE' => $request_signature
+				'X-REQUEST-SIGNATURE' => $request_signature,
 			];
 
 			// Send request
@@ -410,27 +433,41 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 				CURLOPT_SSL_VERIFYHOST => 0,
 				CURLOPT_SSL_VERIFYPEER => 0
 			]);
-			$response = $http->post($url, $data, $headers);
-			$body     = $response->body;
-			if (empty($body))
+			$response      = $http->post($request_url, $request_data, $request_headers);
+			$response_body = $response->body;
+			if (empty($response_body))
 			{
 				$message = preg_replace('#^[0-9]*\s#', '', $response->headers['Status']);
 
 				throw new \Exception($message, $response->code);
 			}
 
-			$context = json_decode($body);
+			// Parse response
+			$contents = json_decode($response_body);
 			if ($response->code === 201)
 			{
-				$link = $context;
+				$link = $contents;
 			}
 			elseif ($response->code === 409)
 			{
-				$link = $context->AddDetails->URL;
+				$link = $contents->AddDetails->URL;
 			}
 			else
 			{
-				throw new \Exception($context->Code, $response->code);
+				throw new \Exception($contents->Code, $response->code);
+			}
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction, 'success']);
+
+			// Add debug data
+			if ($debug)
+			{
+				LogHelper::addDebug($debug, [
+					'context'       => $context,
+					'request_data'  => $data,
+					'response_code' => $response->code,
+					'response_data' => $contents
+				]);
 			}
 
 			$result['link'] = $link;
@@ -439,6 +476,22 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 		}
 		catch (\Exception $e)
 		{
+			$debugData = [
+				'context'       => $context,
+				'message'       => $e->getMessage(),
+				'error_code'    => $e->getCode(),
+				'request_data'  => $data,
+				'response_data' => $contents
+			];
+			if ($debug)
+			{
+				LogHelper::addDebug($debug, $debugData, true);
+			}
+			LogHelper::addError($debugData);
+
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction, 'error', $e->getMessage()]);
+
 			throw new \Exception('Payselection: ' . $e->getCode() . ' - ' . $e->getMessage(), 500, $e);
 		}
 	}
@@ -456,27 +509,57 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 */
 	public function onPaymentCallback(string $context, array $input, $model, Registry $params)
 	{
-		// Add logger
-		Log::addLogger([
-			'text_file'         => 'plg_radicalmart_payment_payselection.php',
-			'text_entry_format' => "{DATETIME}\t{CLIENTIP}\t{MESSAGE}\t{PRIORITY}"],
-			Log::ALL, ['plg_radicalmart_payment_payselection']);
+		$debug    = false;
+		$contents = false;
 
-		$app = $this->getApplication();
-
+		$debugger     = 'payment.callback';
+		$debuggerFile = 'site_payment_controller.php';
+		$this->componentDebug($context, 'addDebug', [$debugger, $debuggerFile, 'Request in plugin']);
+		$this->componentDebug($context, 'addDebugHead', [$debugger,
+			[
+				'TransactionId' => (!empty($input['TransactionId'])) ? $input['TransactionId'] : null,
+				'Event'         => (!empty($input['Payment'])) ? $input['Payment'] : null,
+				'OrderId'       => (!empty($input['OrderId'])) ? $input['OrderId'] : null,
+			]]);
 		try
 		{
+			// Get Transaction id
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction = 'Check input data', 'start']);
 			if (empty($input['TransactionId']))
 			{
 				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_TRANSACTION_NOT_FOUND'));
 			}
+			$transaction_id = $input['TransactionId'];
 
-			// Get order
+			// Check event
+			$app = $this->getApplication();
+			if (empty($input['Event']) || $input['Event'] !== 'Payment')
+			{
+				LogHelper::addWarning([
+					'context'    => $context,
+					'message'    => 'Incorrect input event',
+					'input_data' => $input,
+				]);
+
+				$this->componentDebug($context, 'addDebug',
+					[$debugger, $debuggerFile, $debugAction, 'error', 'Incorrect payment status']);
+
+
+				$app->close(200);
+			}
+
+			// Check order id
 			if (empty($input['OrderId']))
 			{
 				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_ORDER_NOT_FOUND'));
 			}
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction, 'success', null, [], null, false]);
 
+			// Get order
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction = 'Get order', 'start']);
 			if (!$order = $model->getOrder($input['OrderId']))
 			{
 				$messages = [];
@@ -492,8 +575,12 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 
 				throw new \Exception(implode(PHP_EOL, $messages), 404);
 			}
+			$this->componentDebug($context, 'addDebugHead', [$debugger, ['order_id' => $order->id]]);
+			$this->componentDebug($context, 'addDebug', [$debugger, $debuggerFile, $debugAction, 'success']);
 
 			// Check order payment method
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction = 'Check payment method', 'start']);
 			if (empty($order->payment)
 				|| empty($order->payment->id)
 				|| empty($order->payment->plugin)
@@ -508,33 +595,53 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			{
 				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'));
 			}
-			if (empty($params->get('api_id')) || empty($params->get('api_secret')))
+
+			// Set Debug
+			if ((int) $params->get('debug_payment_callback', 0) === 1)
 			{
-				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'));
+				$debug = 'payment.callback';
 			}
 
 			// Check order status
 			if (empty($order->status->id) || !in_array($order->status->id, $params->get('payment_available', [])))
 			{
+				LogHelper::addWarning([
+					'context'       => $context,
+					'message'       => 'Incorrect order status',
+					'input_data'    => $input,
+					'response_data' => $contents
+				]);
+				$this->componentDebug($context, 'addDebug',
+					[$debugger, $debuggerFile, $debugAction, 'error', 'Incorrect order status']);
+
 				$app->close(200);
 
 				return;
 			}
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction, 'success', null, [], null, false]);
 
-			// Get transaction
-			$transaction_id    = $input['TransactionId'];
-			$url               = 'https://gw.payselection.com/transactions/' . $transaction_id;
-			$site              = Uri::getInstance()->getHost();
-			$request_id        = md5('getTransaction' . '_' . $site . '_' . $transaction_id);
-			$request_signature = hash_hmac('sha256',
-				implode(PHP_EOL, [
-					'GET',
-					'/transactions/' . $transaction_id,
-					$params->get('api_id'),
-					$request_id,
-					''])
-				, $params->get('api_secret'));
-			$headers           = [
+			// Check access
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction = 'Send api request', 'start']);
+			if (empty($params->get('api_id')) || empty($params->get('api_secret')))
+			{
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_EMPTY_PAYMENTS_METHOD_PARAMS'));
+			}
+
+			// Prepare request data
+			$request_path      = '/transactions/' . $transaction_id . '/extended';
+			$request_url       = 'https://gw.payselection.com' . $request_path;
+			$request_data      = '';
+			$request_id        = md5(serialize([$request_path, Uri::getInstance()->getHost(), $request_data, time()]));
+			$request_signature = hash_hmac('sha256', implode(PHP_EOL, [
+				'GET',
+				$request_path,
+				$params->get('api_id'),
+				$request_id,
+				$request_data
+			]), $params->get('api_secret'));
+			$request_headers   = [
 				'Content-Type'        => 'application/json',
 				'X-SITE-ID'           => $params->get('api_id'),
 				'X-REQUEST-ID'        => $request_id,
@@ -547,44 +654,50 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 				CURLOPT_SSL_VERIFYHOST => 0,
 				CURLOPT_SSL_VERIFYPEER => 0
 			]);
-
-			// Parse request
-			$response = $http->get($url, $headers);
-			$body     = $response->body;
-			if (empty($body))
+			$response      = $http->get($request_url, $request_headers);
+			$response_body = $response->body;
+			if (empty($response_body))
 			{
 				$message = preg_replace('#^[0-9]*\s#', '', $response->headers['Status']);
+
 				throw new \Exception($message, $response->code);
 			}
+			$this->componentDebug($context, 'addDebug', [$debugger, $debuggerFile, $debugAction, 'success']);
 
-			$context = new Registry($body);
-			if ($response->code === 200)
+			// Parse response
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction = 'Parse api response', 'start']);
+			$contents = json_decode($response_body);
+			if ($response->code !== 200)
 			{
-				$transaction = $context;
+				throw new \Exception($contents->Code, $response->code);
 			}
-			elseif ($response->code === 404)
-			{
-				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_TRANSACTION_NOT_FOUND'), 404);
-			}
-			else
-			{
-				throw new \Exception($context->get('Code'), $response->code);
-			}
-			$transaction_id = str_replace(['PS00000', 'GE00000'], '', $transaction->get('TransactionId'));
 
-			// Get order
-			if ($transaction->get('OrderId') !== $order->number)
+			// Check order
+			if ($contents->OrderId !== $order->number)
 			{
-				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PAYSELECTION_ERROR_ORDER_NOT_FOUND'));
+				throw new \Exception(Text::_('PLG_RADICALMART_PAYMENT_PARTPAY_ERROR_ORDER_NOT_FOUND'));
 			}
 
 			// Check transaction state
-			if ($transaction->get('TransactionState') !== 'success')
+			if ($contents->TransactionState !== 'success')
 			{
+				LogHelper::addWarning([
+					'context'       => $context,
+					'message'       => 'Incorrect Transaction State',
+					'input_data'    => $input,
+					'response_data' => $contents
+				]);
+
+				$this->componentDebug($context, 'addDebug',
+					[$debugger, $debuggerFile, $debugAction, 'response', 'Incorrect Transaction State']);
+
 				$app->close(200);
 
 				return;
 			}
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction, 'success', null, [], null, false]);
 
 			// Add log
 			$addLog = true;
@@ -598,18 +711,27 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			}
 			if ($addLog)
 			{
+				$this->componentDebug($context, 'addDebug',
+					[$debugger, $debuggerFile, $debugAction = 'Add order log', 'start']);
+
 				$model->addLog($order->id, 'payselection_paid', [
 					'plugin'         => 'payselection',
 					'group'          => 'radicalmart_payment',
 					'transaction_id' => $transaction_id,
 					'user_id'        => -1
 				]);
+
+				$this->componentDebug($context, 'addDebug',
+					[$debugger, $debuggerFile, $debugAction, 'success', null, [], null, false]);
 			}
 
 			// Set paid status
 			$paidStatus = (int) $params->get('paid_status', 0);
 			if (!empty($paidStatus))
 			{
+				$this->componentDebug($context, 'addDebug',
+					[$debugger, $debuggerFile, $debugAction = 'Change order status', 'start']);
+
 				if (!$model->updateStatus($order->id, $paidStatus, false, -1))
 				{
 					$messages = [];
@@ -620,13 +742,31 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 
 					throw new \Exception(implode(PHP_EOL, $messages));
 				}
+
+				$this->componentDebug($context, 'addDebug', [$debugger, $debuggerFile, $debugAction, 'sucess']);
 			}
+
+			$this->componentDebug($context, 'addDebug', [$debugger, $debuggerFile, 'Callback response', 'response']);
 
 			$app->close(200);
 		}
 		catch (\Exception $e)
 		{
-			Log::add($e->getMessage(), Log::ERROR, 'plg_radicalmart_payment_payselection');
+			$debugData = [
+				'context'       => $context,
+				'message'       => $e->getMessage(),
+				'error_code'    => $e->getCode(),
+				'input_data'    => $input,
+				'response_data' => $contents
+			];
+			if ($debug)
+			{
+				LogHelper::addDebug($debug, $debugData, true);
+			}
+			LogHelper::addError($debugData);
+
+			$this->componentDebug($context, 'addDebug',
+				[$debugger, $debuggerFile, $debugAction, 'error', $e->getMessage()]);
 
 			throw new \Exception('Payselection: ' . $e->getMessage(), 500, $e);
 		}
@@ -663,5 +803,34 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Routing method to call component debug helper method if canned.
+	 *
+	 * @param   string|null  $context  Context selector string.
+	 * @param   string|null  $method   Helper method name.
+	 * @param   array|null   $args     Method arguments array.
+	 *
+	 * @since __DEPLOY_VERSION__
+	 */
+	protected function componentDebug(?string $context = null, ?string $method = null, ?array $args = [])
+	{
+		if (empty($context) || empty($method))
+		{
+			return;
+		}
+		if (!is_array($args))
+		{
+			$args = array_values((new Registry($args))->toArray());
+		}
+
+		$debugHelper = (strpos($context, 'com_radicalmart.') !== false) ? RadicalMartDebugHelper::class : false;
+		if (!$debugHelper)
+		{
+			return;
+		}
+
+		call_user_func_array([$debugHelper, $method], $args);
 	}
 }
