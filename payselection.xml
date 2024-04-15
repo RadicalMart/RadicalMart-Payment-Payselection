@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.9" type="plugin" group="radicalmart_payment" method="upgrade">
+<extension type="plugin" group="radicalmart_payment" method="upgrade">
 	<name>PLG_RADICALMART_PAYMENT_PAYSELECTION</name>
 	<author>RadicalMart Team</author>
 	<creationDate>April 2024</creationDate>
-	<copyright>Copyright © 2021 RadicalMart. All rights reserved.</copyright>
+	<copyright>Copyright © 2024 RadicalMart. All rights reserved.</copyright>
 	<license>https://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>info@radicalmart.ru</authorEmail>
 	<authorUrl>https://radicalmart.ru</authorUrl>
