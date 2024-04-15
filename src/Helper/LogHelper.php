@@ -2,7 +2,7 @@
 /*
  * @package     RadicalMart Payment Payselection Plugin
  * @subpackage  plg_radicalmart_payment_payselection
- * @version     __DEPLOY_VERSION__
+ * @version     2.2.0
  * @author      RadicalMart Team - radicalmart.ru
  * @copyright   Copyright (c) 2024 RadicalMart. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
@@ -26,7 +26,7 @@ class LogHelper
 	 *
 	 * @var string
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.1.1
 	 */
 	protected static string $extension = 'plg_radicalmart_payment_payselection';
 
@@ -35,7 +35,7 @@ class LogHelper
 	 *
 	 * @var array|null
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.1.1
 	 */
 	protected static ?array $_logger = null;
 
@@ -44,7 +44,7 @@ class LogHelper
 	 *
 	 * @param   string|null  $context  Context selector string.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.1.1
 	 */
 	public static function addLogger(?string $context = null)
 	{
@@ -74,7 +74,7 @@ class LogHelper
 	 *
 	 * @return string Logger category.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.1.1
 	 */
 	public static function getCategory(?string $context = null): string
 	{
@@ -94,7 +94,7 @@ class LogHelper
 	 * @param   array|null   $data      Advanced data.
 	 * @param   bool         $error     Is error entry.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.1.1
 	 */
 	public static function addDebug(?string $selector = null, ?array $data = [], bool $error = false)
 	{
@@ -110,7 +110,7 @@ class LogHelper
 	 *
 	 * @param   array|null  $data  Entry data.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.1.1
 	 */
 	public static function addWarning(?array $data = [])
 	{
@@ -126,7 +126,7 @@ class LogHelper
 	 *
 	 * @param   array|null  $data  Entry data.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.1.1
 	 */
 	public static function addError(?array $data = [])
 	{
@@ -144,7 +144,7 @@ class LogHelper
 	 *
 	 * @return string Log entry string.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.1.1
 	 */
 	public static function prepareEntry(?array $data = []): string
 	{

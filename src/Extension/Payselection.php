@@ -2,7 +2,7 @@
 /*
  * @package     RadicalMart Payment Payselection Plugin
  * @subpackage  plg_radicalmart_payment_payselection
- * @version     __DEPLOY_VERSION__
+ * @version     2.2.0
  * @author      RadicalMart Team - radicalmart.ru
  * @copyright   Copyright (c) 2024 RadicalMart. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
@@ -812,7 +812,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 * @param   string|null  $method   Helper method name.
 	 * @param   array|null   $args     Method arguments array.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.1.1
 	 */
 	protected function componentDebug(?string $context = null, ?string $method = null, ?array $args = [])
 	{
