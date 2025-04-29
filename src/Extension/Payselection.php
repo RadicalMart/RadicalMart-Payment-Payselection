@@ -314,6 +314,30 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 				],
 			];
 
+			// Customer Info
+			$customerInfo = [];
+			if (!empty($order->contacts['first_name']))
+			{
+				$customerInfo['FirstName'] = $order->contacts['first_name'];
+			}
+			if (!empty($order->contacts['last_name']))
+			{
+				$customerInfo['LastName'] = $order->contacts['last_name'];
+			}
+			if (!empty($order->contacts['email']))
+			{
+				$customerInfo['Email']        = $order->contacts['email'];
+				$customerInfo['ReceiptEmail'] = $order->contacts['email'];
+			}
+			if (!empty($order->contacts['phone']))
+			{
+				$customerInfo['Phone'] = $order->contacts['phone'];
+			}
+			if (!empty($customerInfo))
+			{
+				$data['CustomerInfo'] = $customerInfo;
+			}
+
 			// Receipt
 			if ((int) $params->get('receipt', 0) === 1 && !empty($order->receipt))
 			{
@@ -344,7 +368,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 				}
 				if (!empty($order->contacts['last_name']))
 				{
-					$name[] = $order->contacts['first_name'];
+					$name[] = $order->contacts['last_name'];
 				}
 				if (!empty($name))
 				{
