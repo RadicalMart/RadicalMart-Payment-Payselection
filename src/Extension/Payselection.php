@@ -4,7 +4,7 @@
  * @subpackage  plg_radicalmart_payment_payselection
  * @version     __DEPLOY_VERSION__
  * @author      RadicalMart Team - radicalmart.ru
- * @copyright   Copyright (c) 2025 RadicalMart. All rights reserved.
+ * @copyright   Copyright (c) 2026 RadicalMart. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
  * @link        https://radicalmart.ru/
  */
@@ -95,7 +95,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @since 2.0.0
 	 */
-	public function onRadicalMartPrepareMethodForm(Form $form, $data = [], $tmpData = [])
+	public function onRadicalMartPrepareMethodForm(Form $form, mixed $data = [], mixed $tmpData = []): void
 	{
 		$value = Uri::getInstance()->toString(['scheme', 'host', 'port'])
 			. '/' . RadicalMartParamsHelper::getComponentParams()
@@ -113,7 +113,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @since 2.0.0
 	 */
-	public function onRadicalMartExpressPrepareConfigForm(Form $form, $data = [])
+	public function onRadicalMartExpressPrepareConfigForm(Form $form, mixed $data = []): void
 	{
 		$value = Uri::getInstance()->toString(['scheme', 'host', 'port'])
 			. '/' . RadicalMartExpressParamsHelper::getComponentParams()
@@ -135,7 +135,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 * @since  2.0.0
 	 */
 	public function onGetOrderPaymentMethods(string $context, object $method, array $formData,
-	                                         array  $products, array $currency)
+	                                         array  $products, array $currency): void
 	{
 		// Set disabled
 		$method->disabled = false;
@@ -168,7 +168,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @since  2.0.0
 	 */
-	public function onGetOrderLogs(string $context, array &$log)
+	public function onGetOrderLogs(string $context, array &$log): void
 	{
 		if ($log['action'] === 'payselection_paid')
 		{
@@ -524,14 +524,15 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 * Method to set RadicalMart & RadicalMartExpress order pay status after payment.
 	 *
 	 * @param   array                                                    $input   Input data.
-	 * @param   RadicalMartPaymentModel| RadicalMartExpressPaymentModel  $model   RadicalMart model.
+	 * @param   RadicalMartExpressPaymentModel| RadicalMartPaymentModel  $model   RadicalMart model.
 	 * @param   Registry                                                 $params  RadicalMart params.
 	 *
 	 * @throws \Exception
 	 *
 	 * @since  2.0.0
 	 */
-	public function onPaymentCallback(string $context, array $input, $model, Registry $params)
+	public function onPaymentCallback(string                                                 $context, array $input,
+	                                  RadicalMartExpressPaymentModel|RadicalMartPaymentModel $model, Registry $params): void
 	{
 		$debug    = false;
 		$contents = false;
@@ -804,11 +805,11 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 * @param   string  $context  Context selector string.
 	 * @param   int     $pk       Payment method id.
 	 *
-	 * @return false|Registry Method prams registry object on success, False on failure.
+	 * @return false|Registry Method params registry object on success, False on failure.
 	 *
 	 * @since 2.0.0
 	 */
-	protected function getMethodParams(string $context, int $pk)
+	protected function getMethodParams(string $context, int $pk): false|Registry
 	{
 		if (strpos($context, 'com_radicalmart.') !== false)
 		{
@@ -838,7 +839,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @since 2.1.1
 	 */
-	protected function componentDebug(?string $context = null, ?string $method = null, ?array $args = [])
+	protected function componentDebug(?string $context = null, ?string $method = null, ?array $args = []): void
 	{
 		if (empty($context) || empty($method))
 		{

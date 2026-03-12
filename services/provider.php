@@ -4,7 +4,7 @@
  * @subpackage  plg_radicalmart_payment_payselection
  * @version     __DEPLOY_VERSION__
  * @author      RadicalMart Team - radicalmart.ru
- * @copyright   Copyright (c) 2025 RadicalMart. All rights reserved.
+ * @copyright   Copyright (c) 2026 RadicalMart. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
  * @link        https://radicalmart.ru/
  */
@@ -28,14 +28,14 @@ return new class implements ServiceProviderInterface {
 	 *
 	 * @since   2.0.0
 	 */
-	public function register(Container $container)
+	public function register(Container $container): void
 	{
 		$container->set(PluginInterface::class,
 			function (Container $container) {
 				// Create plugin class
 				$subject = $container->get(DispatcherInterface::class);
-				$config  = (array)  PluginHelper::getPlugin('radicalmart_payment', 'payselection');
-				$plugin = new Payselection($subject, $config);
+				$config  = (array) PluginHelper::getPlugin('radicalmart_payment', 'payselection');
+				$plugin  = new Payselection($subject, $config);
 
 				// Set application
 				$app = Factory::getApplication();

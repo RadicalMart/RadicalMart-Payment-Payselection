@@ -4,7 +4,7 @@
  * @subpackage  plg_radicalmart_payment_payselection
  * @version     __DEPLOY_VERSION__
  * @author      RadicalMart Team - radicalmart.ru
- * @copyright   Copyright (c) 2025 RadicalMart. All rights reserved.
+ * @copyright   Copyright (c) 2026 RadicalMart. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
  * @link        https://radicalmart.ru/
  */
@@ -55,7 +55,7 @@ return new class () implements ServiceProviderInterface {
 			 *
 			 * @since  2.0.0
 			 */
-			protected string $minimumJoomla = '4.2';
+			protected string $minimumJoomla = '5.0';
 
 			/**
 			 * Minimum PHP version required to install the extension.
@@ -64,7 +64,7 @@ return new class () implements ServiceProviderInterface {
 			 *
 			 * @since  2.0.0
 			 */
-			protected string $minimumPhp = '7.4';
+			protected string $minimumPhp = '8.2';
 
 			/**
 			 * Update methods.
@@ -73,9 +73,7 @@ return new class () implements ServiceProviderInterface {
 			 *
 			 * @since  2.0.0
 			 */
-			protected array $updateMethods = [
-				'update2_1_0'
-			];
+			protected array $updateMethods = [];
 
 			/**
 			 * Constructor.
@@ -229,7 +227,7 @@ return new class () implements ServiceProviderInterface {
 			 *
 			 * @since  1.0.0
 			 */
-			protected function enablePlugin(InstallerAdapter $adapter)
+			protected function enablePlugin(InstallerAdapter $adapter): void
 			{
 				// Prepare plugin object
 				$plugin          = new \stdClass();
@@ -251,13 +249,13 @@ return new class () implements ServiceProviderInterface {
 			 *
 			 * @since  2.1.0
 			 */
-			protected function checkFiscalizationInstaller(Installer $installer = null)
+			protected function checkFiscalizationInstaller(Installer $installer = null): void
 			{
 				try
 				{
 					// Find extension
 					$db    = $this->db;
-					$query = $db->getQuery(true)
+					$query = $db->createQuery()
 						->select('extension_id')
 						->from($db->quoteName('#__extensions'))
 						->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
@@ -313,33 +311,6 @@ return new class () implements ServiceProviderInterface {
 				catch (Exception $e)
 				{
 					$this->app->enqueueMessage($e->getMessage(), 'error');
-				}
-			}
-
-			/**
-			 * Method to update to 2.1.0 version.
-			 *
-			 * @since  2.1.0
-			 */
-			protected function update2_1_0()
-			{
-				$folders = [
-					Path::clean(JPATH_ROOT . '/administrator/language/en-GB'),
-					Path::clean(JPATH_ROOT . '/administrator/language/ru-RU'),
-				];
-
-				// Remove old language files
-				foreach ($folders as $folder)
-				{
-					$files = Folder::files($folder, '.plg_radicalmart_payment_payselection.', true, true);
-
-					foreach ($files as $file)
-					{
-						if (strpos($file, '.plg_radicalmart_payment_payselection.') !== false)
-						{
-							File::delete($file);
-						}
-					}
 				}
 			}
 		});
