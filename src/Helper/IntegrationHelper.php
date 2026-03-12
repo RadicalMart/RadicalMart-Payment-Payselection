@@ -2,7 +2,7 @@
 /*
  * @package     RadicalMart Payment Payselection Plugin
  * @subpackage  plg_radicalmart_payment_payselection
- * @version     __DEPLOY_VERSION__
+ * @version     2.3.0
  * @author      RadicalMart Team - radicalmart.ru
  * @copyright   Copyright (c) 2026 RadicalMart. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
@@ -43,7 +43,7 @@ class IntegrationHelper
 	 *
 	 * @var array
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	protected static array $_loggers = [];
 
@@ -54,7 +54,7 @@ class IntegrationHelper
 	 *
 	 * @return string|bool Component name on success, False on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function getComponentFromForm(?Form $form = null): string|bool
 	{
@@ -89,7 +89,7 @@ class IntegrationHelper
 	 *
 	 * @return string|bool Component name on success, False on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function getComponentFromContext(?string $context = null): string|bool
 	{
@@ -118,7 +118,7 @@ class IntegrationHelper
 	 *
 	 * @return string|bool|RadicalMartDebugHelper|RadicalMartExpressDebugHelper Helper class name on success, False on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function getDebugHelper(string $component): bool|string
 	{
@@ -142,7 +142,7 @@ class IntegrationHelper
 	 *
 	 * @return string|bool|RadicalMartLayoutsHelper|RadicalMartExpressLayoutsHelper Helper class name on success, False on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function getLayoutsHelper(string $component): bool|string
 	{
@@ -166,7 +166,7 @@ class IntegrationHelper
 	 *
 	 * @return string|bool|RadicalMartParamsHelper|RadicalMartExpressParamsHelper Helper class name on success, False on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function getParamsHelper(string $component): bool|string
 	{
@@ -190,7 +190,7 @@ class IntegrationHelper
 	 *
 	 * @return string|bool|RadicalMartPluginsHelper|RadicalMartExpressPluginsHelper Helper class name on success, False on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function getPluginsHelper(string $component): bool|string
 	{
@@ -214,7 +214,7 @@ class IntegrationHelper
 	 *
 	 * @return string|bool|RadicalMartUserHelper|RadicalMartExpressUserHelper Helper class name on success, False on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function getUserHelper(string $component): bool|string
 	{
@@ -243,7 +243,7 @@ class IntegrationHelper
 	 *
 	 * @return ModelInterface|bool Component model object instanse on success, False on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function getModel(string $component, string $name, string $prefix = '',
 	                                array  $config = ['ignore_request' => true]): bool|ModelInterface
@@ -275,7 +275,7 @@ class IntegrationHelper
 	 *
 	 * @return bool|RadicalMartOrderModel|RadicalMartExpressOrderModel|null Admin order model on success, False or null on failure.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function getOrderModel(string $component): bool|null|RadicalMartOrderModel|RadicalMartExpressOrderModel
 	{
@@ -291,7 +291,7 @@ class IntegrationHelper
 	 *
 	 * @throws \Exception
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function addOrderLogs(string $component, int $order_id, array $logs): void
 	{
@@ -331,7 +331,7 @@ class IntegrationHelper
 	 *
 	 * @throws \Exception
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function addOrderLog(string $component, int $order_id, string $action, array $data): void
 	{
@@ -353,7 +353,7 @@ class IntegrationHelper
 	 * @param   array        $data      Message advanced data.
 	 * @param   int          $code      Message code.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public static function addLog(string  $category, int $priority = Log::INFO,
 	                              ?string $message = null, array $data = [], int $code = 0): void

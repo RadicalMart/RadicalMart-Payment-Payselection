@@ -2,7 +2,7 @@
 /*
  * @package     RadicalMart Payment Payselection Plugin
  * @subpackage  plg_radicalmart_payment_payselection
- * @version     __DEPLOY_VERSION__
+ * @version     2.3.0
  * @author      RadicalMart Team - radicalmart.ru
  * @copyright   Copyright (c) 2026 RadicalMart. All rights reserved.
  * @license     GNU/GPL license: https://www.gnu.org/copyleft/gpl.html
@@ -44,7 +44,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @var string
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	public string $extension = 'plg_radicalmart_payment_payselection';
 
@@ -835,7 +835,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return bool True if current plugin, false if not.
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	protected function checkOrderPaymentPlugin(object $order): bool
 	{
@@ -850,7 +850,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return Registry Payment method params
 	 *
-	 * @since __DEPLOY_VERSION__
+	 * @since 2.3.0
 	 */
 	protected function getPaymentMethodParams(string $component, int $method_id): Registry
 	{
