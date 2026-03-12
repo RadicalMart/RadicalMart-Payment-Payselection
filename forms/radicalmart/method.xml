@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form addfieldprefix="Joomla\Component\RadicalMart\Administrator\Field">
-	<fieldset name="settings_root" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT">
+	<fieldset name="settings_root" tab="settings"
+			  label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT">
 		<fields name="params">
 			<field name="payment_available" type="statuses"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_PAYMENT_AVAILABLE"
@@ -28,7 +29,8 @@
 				   readonly="true"/>
 		</fields>
 	</fieldset>
-	<fieldset name="settings_receipt" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT">
+	<fieldset name="settings_receipt" tab="settings"
+			  label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT">
 		<fields name="params">
 			<field name="receipt" type="radio"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_RECEIPT_LABEL"
@@ -55,7 +57,8 @@
 			</field>
 		</fields>
 	</fieldset>
-	<fieldset name="settings_debug" label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_DEBUG">
+	<fieldset name="settings_debug" tab="settings"
+			  label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_DEBUG">
 		<fields name="params">
 			<field name="debug_payment_pay" type="radio"
 				   label="PLG_RADICALMART_PAYMENT_PAYSELECTION_PARAMS_DEBUG_PAYMENT_PAY"
