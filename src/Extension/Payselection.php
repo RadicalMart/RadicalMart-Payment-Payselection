@@ -851,21 +851,6 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 			$params->set('paid_status', 2);
 		}
 
-		if (!empty($params->get('promo_codes')))
-		{
-			if (!is_array($params->get('promo_codes')))
-			{
-				$codes = [];
-
-				foreach ((new Registry($params->get('promo_codes')))->toArray() as $promo_code)
-				{
-					$codes[trim($promo_code['promo_value'])] = trim($promo_code['promo_label']);
-				}
-
-				$params->set('promo_codes', $codes);
-			}
-		}
-
 		return $params;
 	}
 }
