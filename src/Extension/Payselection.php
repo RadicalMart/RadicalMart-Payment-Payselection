@@ -49,24 +49,6 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	public string $extension = 'plg_radicalmart_payment_payselection';
 
 	/**
-	 * Enable on RadicalMart
-	 *
-	 * @var  bool
-	 *
-	 * @since  2.0.0
-	 */
-	public bool $radicalmart = true;
-
-	/**
-	 * Enable on RadicalMartExpress
-	 *
-	 * @var  bool
-	 *
-	 * @since  2.0.0
-	 */
-	public bool $radicalmart_express = true;
-
-	/**
 	 * Returns an array of events this subscriber will listen to.
 	 *
 	 * @return  array
