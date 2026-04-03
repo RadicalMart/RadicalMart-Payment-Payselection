@@ -161,10 +161,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	public function onCheckOrderPay(string $context, object $order): bool
 	{
 		// Check order payment method
-		if (empty($order->payment)
-			|| empty($order->payment->id)
-			|| empty($order->payment->plugin)
-			|| $order->payment->plugin !== 'payselection')
+		if (!$this->checkOrderPaymentPlugin($order))
 		{
 			return false;
 		}
@@ -813,7 +810,7 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Method to check order payment plugin.
 	 *
-	 * @param   object  $order
+	 * @param   object  $order  Order object.
 	 *
 	 * @return bool True if current plugin, false if not.
 	 *
@@ -821,10 +818,13 @@ class Payselection extends CMSPlugin implements SubscriberInterface
 	 */
 	protected function checkOrderPaymentPlugin(object $order): bool
 	{
-		return ((!empty($order->payment) && !empty($order->payment->plugin)) && $order->payment->plugin === $this->_name);
+		return (!empty($order->payment)
+			&& !empty($order->payment->id)
+			&& !empty($order->payment->plugin)
+			&& $order->payment->plugin === $this->_name);
 	}
 
-	/**
+	/**`
 	 * Method to get Payment method params.
 	 *
 	 * @param   string  $component  Component selector string.
